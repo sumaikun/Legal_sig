@@ -1,0 +1,144 @@
+.table
+         {
+            width:15em;
+            text-align: center;
+            border: 1px solid black;
+
+            /*background-color: #669966;*/
+         }
+
+         #formulario
+         {
+
+            /*border: 2px solid black;*/
+         }
+
+         .labels
+         {
+            display: inline-block;
+            font-family: Verdana;
+            font-size: 15px;
+            width:50%;
+            margin-left: 10px;
+
+
+         }
+
+         #checks
+         {
+            margin-left: 280px;
+            margin-top: -50px;
+            margin-right: 20px;
+            vertical-align: middle;
+            transform: scale(1.5);
+
+         } 
+
+
+         #misFormas
+        {
+
+            float:left;
+            
+           
+            margin-top: -400px;
+            margin-left: 3em;
+            z-index: 2;
+            position:absolute;
+            background-color: white;
+            width:25em;
+            visibility: hidden;
+            /*position: fixed;*/
+           
+        }
+
+        #Permisos
+         {
+
+             z-index: 3;
+            
+             width:15em;
+           
+             border:1px solid #400000 ;
+             background-color:  #B0B0B0 ;
+             opacity :0.94;
+             visibility: hidden;
+             position:absolute;
+             font-family: Verdana;
+             font-weight: bold;
+            
+         }
+
+         .thead
+         {
+            text-align: center;
+              border: 1px solid black;
+             background-color: #669999;
+             position:relative;
+
+         } 
+
+         .thead2
+         {
+            border-top: 1px solid black;
+            border-left: 1px solid black;
+             background-color: #669999;
+         }
+
+         .thead3
+         {
+            border-right: 1px solid black;
+            border-top: 1px solid black;
+             background-color: #669999;
+         }
+
+         .table
+         {
+             z-index: 1;
+            
+            /*display: inline-block;*/
+         }
+         .titulo
+         {
+            text-align: center;
+            border:2px solid #3300FF;
+            background-color: #3366CC;
+            font-family: Verdana;
+            font-weight: bold;
+         }
+
+         .formch
+         {
+            font-family: Verdana;            
+             font-weight: bold;
+            border:2px solid #3300FF;
+         }
+        
+         #boton
+         {
+             margin-left: 120px;
+             margin-bottom: 10px;
+            
+         }
+
+         #cerrar
+         {
+            margin-top: -35px;
+            margin-left: 10px;
+            font-size: 18px;
+
+         }
+
+         #cerrar:hover
+         {
+                     }
+        #busca_info:hover 
+         {
+            background-color: #CCFF99;
+         }   
+    
+
+         .tbody
+         {
+            z-index: 1;
+         }   

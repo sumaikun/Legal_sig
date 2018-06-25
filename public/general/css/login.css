@@ -1,0 +1,14 @@
+.fondo{ 
+    padding-top: 25px; 
+    background: url(../images/fondo_login.jpg) no-repeat center center fixed; 
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      -o-background-size: cover;
+      background-size: cover;
+}
+
+
+
+.sinpadding [class*="col-"] {
+    padding: 0;
+}

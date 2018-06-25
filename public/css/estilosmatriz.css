@@ -1,0 +1,82 @@
+
+        th{
+          text-align: center;
+
+        }
+        .col1
+        {
+          width:10px;
+          text-align: center;
+        }
+       .col2
+        {
+          
+          text-align: center;
+          width:30px;
+        }
+
+        .col3
+        {
+          text-align: center;
+        }
+
+        .filter
+        {
+          float:right;
+          text-align: center;
+          margin-right: 23em;
+        }
+
+        #thfilters
+        {
+          display: inline-block;
+          margin-left: 5px;
+          text-align: center;
+        }
+
+        #thfilters10
+        {
+          display: inline-block;
+          margin-left: 5px;
+          text-align: center;
+          width:220px;
+        }   
+
+        .letra {
+          font-size : 80%;
+        } 
+
+        .cumplimiento
+        {
+          font-size: 90%;
+          font-family: Verdana;
+         /* width: 60%;*/
+        }  
+
+        .observacion
+        {
+          font-size: 90%;
+          font-family: Verdana;
+          margin-top: 10px;
+         /* width: 60%;*/
+        }  
+
+        .editar
+        {
+          font-size: 90%;
+          font-family: Verdana;
+          margin-top: 10px;
+         /* width: 60%;*/
+        } 
+        
+        .ul
+        {
+          /*background-color: red;*/
+          border:0;
+          margin-right: 200px;
+        }    
+
+        .col4
+        {
+          max-width:130px;
+        }

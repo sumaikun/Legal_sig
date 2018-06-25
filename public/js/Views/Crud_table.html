@@ -1,0 +1,51 @@
+<h3>{{current_view.table}}</h3>
+<!--
+<button ng-click="reload_ngtable('Ngcrudtable')">Actualizar</button>
+-->
+<table ng-init="init_table(Factores)" ng-table-dynamic="CC.Ngcrudtable with current_view.columns" class=" table table-responsive table-bordered" show-filter='true'>
+  <tr ng-repeat="row in $data">    
+    <td ng-repeat="col in current_view.columns">                  
+      <p ng-show="col.Field != 'Opciones' && col.Type != 'timestamp' && col.Key != 'MUL' && col.foreign_column == null" ng-model="row[col.Field]" onclick="big_text_edit(this)" contenteditable="{{column_behavior(col)}}" >
+        {{::row[col.Field]}}
+      </p>
+
+      <span ng-if ="col.Key == 'MUL' && session_roles([3]) ">        
+        {{foreign_value(col.key_data,row[col.Field])}}
+      </span>
+
+      <div ng-if="isWatching() && session_roles([1,2])">
+        <select ng-if ="col.Key == 'MUL'" class="form-control" ng-model="row[col.Field]">
+          <option  ng-repeat="selector in dynamicSelectArray(col.key_data.REFERENCED_TABLE_NAME)"  ng-value="selector[col.key_data.REFERENCED_COLUMN_NAME]"   >
+            {{selector[key_value]}}
+          </option>
+        </select>
+      </div>
+
+       <span ng-if="col.foreign_column != null">
+          {{foreign_value(col.foreign_column,row[col.Field])}}
+       </span>
+
+      <div ng-if ="col.Type == 'timestamp'">
+        <input ng-if ="row[col.Field] != null " ng-model="row[col.Field]" type="date"  timestamp-to-date>
+        <input ng-if ="row[col.Field] == null " ng-model="row[col.Field]" type="date" >
+      </div>
+
+      <div ng-show="col.Field == 'Opciones'">
+        <button  ng-repeat="action in col.actions" title="{{action.title}}" ng-show="check_session_action(action.role) && evaluate_column_conditions(action.condition,row) " ng-click="execute_action(row,current_view,action.action)"><i class="fas fa-{{action.icon}}"></i></button>       
+      </div>                                      
+    </td>
+  
+  </tr>
+  <tr ng-if ="current_view != null ">    
+    <td ng-repeat="col in current_view.columns"  ng-show="col.show == true" onclick="big_text_edit(this)">
+      <p ng-model="new_element[col.Field]" contenteditable="{{column_behavior(col)}}" ></p>
+    </td>
+    <td><button ng-click="create(new_element,current_view)">Agregar</button></td>    
+  </tr> 
+</table>
+
+<!--
+
+    <button title="Editar" ng-click="edit(row,current_model)"><i class="fas fa-edit"></i></button>
+      <button title="Eliminar" ng-click="delete(row,current_model)"><i class="fas fa-trash"></i></button>
+ -->

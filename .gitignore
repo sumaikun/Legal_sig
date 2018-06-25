@@ -1,0 +1,11 @@
+/vendor
+/bootstrap 
+/node_modules
+/public/logos
+Homestead.yaml
+Homestead.json
+.env
+/storage
+
+/.vagrant
+

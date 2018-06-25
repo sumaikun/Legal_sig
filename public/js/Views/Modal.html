@@ -1,0 +1,106 @@
+<!-- Modal -->
+<div id="AbstractModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content {{modal.size}}">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">{{modal.title}}</h4>
+      </div>
+      <div class="modal-body">
+
+        <div class="form-group" ng-if="modal.content == 'select_in_modal' ">
+           <label class="form-control">{{modal.SelectModal.title}}</label> 
+           <select  class="form-control" ng-model="SelectModal.option">
+            <option  ng-repeat="selector in modal.SelectModal.dataset"  ng-value="selector.value" >
+              {{selector.option}}
+            </option>
+          </select>
+          <br>
+          <button  class="form-control btn-success" ng-click="modal_action(modal.SelectModal.action)">{{modal.SelectModal.buttonname}}</button>
+        </div>
+
+
+
+        <div ng-if="modal.content == 'Crudtable_in_modal' ">
+          <table ng-init="init_table(Factores)" ng-table-dynamic="CC.ModalNgcrudtable with current_view.columns" class=" table table-responsive table-bordered" show-filter='true'>
+            <tr ng-repeat="row in $data">    
+              <td ng-repeat="col in current_view.columns">                  
+                <p ng-show="col.Field != 'Opciones' && col.Type != 'timestamp' && col.Key != 'MUL' && col.foreign_column == null" ng-model="row[col.Field]" onclick="big_text_edit(this)" contenteditable="{{column_behavior(col)}}" >
+                  {{::row[col.Field]}}
+                </p>
+
+                <span ng-if ="col.Key == 'MUL'">        
+                  {{foreign_value(col.key_data,row[col.Field])}}
+                </span>
+
+                <!--
+                <select ng-if ="col.Key == 'MUL'" class="form-control" ng-model="row[col.Field]">
+                  <option  ng-repeat="selector in dynamicArray(col.key_data[0].REFERENCED_TABLE_NAME)"  ng-value="selector[col.key_data[0].REFERENCED_COLUMN_NAME]"   >
+                    {{selector[key_value]}}
+                  </option>
+                </select>
+                 -->
+
+                 <span ng-if="col.foreign_column != null">
+                    {{foreign_value(col.foreign_column,row[col.Field])}}
+                 </span>
+
+                <div ng-if ="col.Type == 'timestamp'">
+                  <input ng-if ="row[col.Field] != null " ng-model="row[col.Field]" type="date"  timestamp-to-date>
+                  <input ng-if ="row[col.Field] == null " ng-model="row[col.Field]" type="date" >
+                </div>
+
+                <div ng-show="col.Field == 'Opciones'">
+                  <button  ng-repeat="action in col.actions" title="{{action.title}}" ng-click="execute_action(row,current_view,action.action)"><i class="fas fa-{{action.icon}}"></i></button>       
+                </div>                                      
+              </td>
+            
+            </tr>
+            <tr>    
+              <td ng-repeat="col in current_view.columns"  ng-show="col.show == true" onclick="big_text_edit(this)">
+                <p ng-model="new_element[col.Field]" contenteditable="{{column_behavior(col)}}" ></p>
+              </td>
+              <td><button ng-click="create(new_element,current_view)">Agregar</button></td>    
+            </tr> 
+          </table>
+
+        </div>
+
+
+        <div ng-if="modal.content == 'table_in_modal' " class="table-responsive">
+          <table  ng-table-dynamic="CC.ModalNgtable with modal.TableModal.columns" class=" table table-responsive table-bordered" show-filter='true'>
+            <tr ng-repeat="row in $data">    
+              <td ng-repeat="col in modal.TableModal.columns">
+
+                <p ng-show="col.Field != 'Opciones' && col.Type != 'timestamp' && col.Key != 'MUL' && col.foreign_column == null" >
+                  {{::row[col.Field]}}
+                </p>
+                <div ng-if="col.Field == 'id' &&  modal.TableModal.id_in_radio == true " class="form-group">
+                  <input type="radio" ng-model="modal.TableModal.radio_value" ng-value="row[col.Field]"> 
+                </div>
+                 <span ng-if ="col.Key == 'MUL'">        
+                  {{foreign_value(col.key_data,row[col.Field])}}
+                </span>
+                 <span ng-if="col.foreign_column != null">
+                    {{foreign_value(col.foreign_column,row[col.Field])}}
+                 </span>
+
+              </td>             
+            </tr>             
+          </table>
+          <br>
+          <div ng-if="modal.TableModal.action != null" class="form-group">
+            <button  ng-click="modal_action(modal.TableModal.action,modal.TableModal.callback)" class="btn btn-primary">{{modal.TableModal.buttonname}}</button>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
