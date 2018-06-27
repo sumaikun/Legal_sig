@@ -4,7 +4,19 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 
 	var self = this;
 
+	var gsd = new get_session_data({resource:SystemServices});
 
+	gsd.execute();
+
+	//$scope.Session = gsd.output();
+
+	async function f1() {
+  		var x = await gsd.output(10);
+  		$scope.Session = x.user_properties;
+  		console.log($scope.Session);
+	}
+
+	f1();
 	
 
 	$scope.new_element = {};
@@ -29,7 +41,89 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 
 	$scope.Estados_vigencia = new table('Estados_vigencia',CrudServices,null,false);
 
-		
+	
+
+	(function() {
+
+		  var table_array = [$scope.Tipo_matriz,$scope.Factores,$scope.Categorias,$scope.Normas,$scope.Articulos,
+		  $scope.Literales,$scope.Tipo_norma,$scope.Autoridad_emisora,$scope.Emision,$scope.Estados_vigencia];
+
+		  // Start off at the first element.
+		  var idx = 0;
+		  var len = table_array.length;
+		  var processing = true;
+
+		  // Do the next link
+		  function doNext() {
+		    var entry = table_array[idx];
+
+		    console.log(idx + ":" + entry);
+		    //ajaxd(entry);
+
+		    if(table_array[idx].rows != null && table_array[idx].columns != null)
+		    {
+		    	console.log(table_array[idx].rows);
+		    	if(idx == (len-1))
+				  	{	alert("tablas cargadas");
+				  		processing=false
+				  	}
+		    }
+		    else
+		    {
+		    	var verify_async_Data = setInterval(function() {
+				  alert(idx);
+				  if (table_array[idx].rows != null) {
+				  	 var processing = false;
+				  	if(idx == (len-1))
+				  	{
+				  		alert("tablas cargadas");
+				  		processing=false
+				  	}
+				  	console.log(table_array[idx].rows);
+				  	//console.log(idx);				  	
+				    clearInterval(verify_async_Data);
+				  }
+				}, 100);
+		    			    	
+		    }
+
+		    idx++;
+		    console.log([idx, len]);
+		    if (idx < len) {
+		      // Don't do anything special
+		      
+		    }  else {
+		      // Reset the counter
+		      idx = 0;
+		    }
+
+		    if(processing)
+		    {
+		    	setTimeout(doNext, 300);	
+		    }
+		    else
+		    {
+				ready_to_make_views();		    	
+		    }
+
+		    
+
+		    /*if(idx<len)
+		    {
+		    	setTimeout(doNext, 300);	
+		    }*/
+		     		    
+           }
+
+		  // And the code needs kicked off somewhere
+		  doNext();
+
+	}());
+
+
+	
+
+	var ready_to_make_views = function(){	
 
 		$scope.factores_view = $scope.Factores.ng_table_adapter(["id","nombre","id_Tipo_matriz"]);
 		//console.log($scope.factores_view);
@@ -68,8 +162,155 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 		$scope.articulos_view.ng_table_adapter_filter([{column:"id_Estados_vigencia",typefilter:"select"},{column:"id_Tipo_norma",typefilter:"select"},{column:"id_Emision",typefilter:"select"},{column:"id_Autoridad_emisora",typefilter:"select"}]);
 
 		$scope.articulos_view.crudcontrol([{title:'Editar',action:'edit',icon:'edit',role:[1,2]},{title:'eliminar',action:'delete_replace',icon:'trash',role:[1]},{title:'Derogar',action:'derogar',icon:'cube',role:[1,2],condition:{column:"id_Estados_vigencia",type:"equal",value:1}},{title:'Verificar Información de derogación',action:'verificacion_derogar',icon:'address-book',role:[1,2],condition:{column:"id_Estados_vigencia",type:"equal",value:2}},{title:'Remover derogación',action:'desderogar',icon:'cube',role:[1,2],condition:{column:"id_Estados_vigencia",type:"equal",value:2}}]);
+	}
+	
+
+	table.prototype.ng_table_adapter_filter = function(columnarray)
+	{
+		var object_columns = this.columns;		
+		columnarray.forEach(function(column){
 
 	
+			
+
+			var filter_object = {};
+			filter_object["Field"] = column.column;	
+
+			var element = $filter('filter')(object_columns,filter_object)[0];
+			
+
+			if(element == null)
+			{
+				element = get_element_by_index(object_columns,"Field",column.column);
+			}			
+
+			
+
+				if(column.typefilter == "select")
+				{
+					if(element.key_data != null)
+					{						
+						var filter_obj = {};
+	  					var filter_type = "select";
+		  				filter_obj[element.Field] = filter_type; 	 	  
+						element.filter= filter_obj;
+						//console.log(element.key_data);							
+		  				element.filterData = create_filter_object(element.key_data);	
+					}
+					
+				}
+						
+		});
+		
+	}
+
+	table.prototype.crudcontrol = function(buttons){
+		var extra_column = {"Field":"Opciones","title":"Opciones","actions":buttons};
+		this.columns.push(extra_column);
+	}
+
+	
+	table.prototype.ng_table_extra_foreigns_columns = function(columnarray)
+	{
+		var new_columns = [];
+		var object = this;
+				
+
+		columnarray.forEach(function(element){
+				
+				var current_row = get_reference_model_name(object,element.model);
+				element.columns.forEach(function(subelement){
+					var foreign_row = $filter('filter')($scope[element.model.capitalize()].columns,{Field:subelement})[0];
+					
+					new_column = {};
+					new_column.Field = subelement;
+					new_column.title = subelement+"("+element.model+")";					
+					new_column.key_data = foreign_row.key_data;
+					new_column.foreign_column = foreign_row.key_data;
+					new_column.local_column = current_row.key_data; 
+					object.columns.push(new_column);
+
+					object.rows.forEach(function(row){
+						row[subelement] = $scope.foreign_extra_value(row,new_column);
+					});
+
+				});
+			});		
+		
+	}
+
+	get_reference_model_name = function(object,model)
+	{		
+		var mul_cols = $filter('filter')(object.columns,{Key:"MUL"});
+		var searched_column = {};
+		mul_cols.forEach(function(element){			
+			if(element.key_data.REFERENCED_TABLE_NAME.capitalize() == model)
+			{
+				searched_column = element;
+			}
+		});
+		return searched_column; 
+	}
+
+
+
+	table.prototype.ng_table_adapter = function(columnsname)
+	{
+		 var ajax_resource = this.resource;
+		 this.columns.forEach(function(element) {	 	  
+		  //Add features for ng-table
+		  //console.log(object);
+
+		  element.show = true;
+
+		  if(columnsname != "*")
+		  {
+		  	if(!columnsname.contains(element.Field))
+		  	{
+		  		element.show = false;
+		  	}
+		  }
+
+		  
+		  element.field = element.Field;
+		  element.sortable = element.Field;	  
+
+
+		  if(element.Key == "MUL")
+		  {		  		
+		  		var request = ajax_resource.foreign_data(element.Field);
+		  		request.then(function(response){
+		  			element.key_data = response.data.f_data[0];
+		  			var foreign_object = $scope[element.key_data.REFERENCED_TABLE_NAME.capitalize()];
+		  			element.title = foreign_object.default+" ("+foreign_object.table+")";
+		  		});
+		  }
+		  else
+		  {
+
+		  	element.title = element.Field;
+
+		 	var filter_obj = {};	 	  
+			  
+			if(element.Type.includes("int")||element.Type.includes("number"))
+			{
+				var filter_type = "number";		  
+			}
+			else
+			{
+			   var filter_type = "text";
+			}
+
+		 	filter_obj[element.field] = filter_type; 	 	  
+		 	element.filter= filter_obj;
+		 	 
+		  }//console.log(element);		  
+
+		});
+		
+		return this;
+	}
+
 
 	$scope.select_table = function()
 	{		

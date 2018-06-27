@@ -33,17 +33,16 @@ table.prototype.init = function()
 	
 	var self = this;
 
-	self.row_promise = this.resource.getAll(this);
-	self.row_promise.then(function(response){
-		 self.rows = response.data.rows;
-		 console.log(self);		 			
+	var request = this.resource.getAll(this);
+	request.then(function(response){
+		 self.rows = response.data.rows;		 			
 	});
 
-	self.column_promise = this.resource.getMETA_COLUMNS(this);
+	var request2 = this.resource.getMETA_COLUMNS(this);
 	
 	
     
-    self.column_promise.then(function(response){
+    request2.then(function(response){
 	 	self.columns = response.data.columns;
 	 	self.columns.forEach(function(element) {	
     	if(element.Type.includes("varchar") && self.default == null)
