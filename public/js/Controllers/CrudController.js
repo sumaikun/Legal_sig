@@ -25,14 +25,8 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 
 	$scope.Factores = new table('Factores',CrudServices,null,false);	
 
-	$scope.Categorias = new table('Categorias',CrudServices,null,false);	
-
-	$scope.Normas = new table('Normas',CrudServices,null,false);	
-
-	$scope.Articulos = new table('Articulos',CrudServices,null,false);	
-
-	$scope.Literales = new table('Literales',CrudServices,null,false);	
-
+	$scope.Categorias = new table('Categorias',CrudServices,null,false);
+	
 	$scope.Tipo_norma = new table('Tipo_norma',CrudServices,null,false);
 
 	$scope.Autoridad_emisora = new table('Autoridad_emisora',CrudServices,null,false);
@@ -41,82 +35,34 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 
 	$scope.Estados_vigencia = new table('Estados_vigencia',CrudServices,null,false);
 
+	$scope.Normas = new table('Normas',CrudServices,null,false);	
+
+	$scope.Articulos = new table('Articulos',CrudServices,null,false);	
+
+	$scope.Literales = new table('Literales',CrudServices,null,false);	
+
 	
 
 	(function() {
 
-		  var table_array = [$scope.Tipo_matriz,$scope.Factores,$scope.Categorias,$scope.Normas,$scope.Articulos,
+		  var tables_array = [$scope.Tipo_matriz,$scope.Factores,$scope.Categorias,$scope.Normas,$scope.Articulos,
 		  $scope.Literales,$scope.Tipo_norma,$scope.Autoridad_emisora,$scope.Emision,$scope.Estados_vigencia];
 
-		  // Start off at the first element.
-		  var idx = 0;
-		  var len = table_array.length;
-		  var processing = true;
+		
 
-		  // Do the next link
-		  function doNext() {
-		    var entry = table_array[idx];
+		  var promises = [];
 
-		    console.log(idx + ":" + entry);
-		    //ajaxd(entry);
+		  tables_array.forEach(function(table_array){
+		  		promises = promises.concat(table_array.loaded); 
+		  });
 
-		    if(table_array[idx].rows != null && table_array[idx].columns != null)
-		    {
-		    	console.log(table_array[idx].rows);
-		    	if(idx == (len-1))
-				  	{	alert("tablas cargadas");
-				  		processing=false
-				  	}
-		    }
-		    else
-		    {
-		    	var verify_async_Data = setInterval(function() {
-				  alert(idx);
-				  if (table_array[idx].rows != null) {
-				  	 var processing = false;
-				  	if(idx == (len-1))
-				  	{
-				  		alert("tablas cargadas");
-				  		processing=false
-				  	}
-				  	console.log(table_array[idx].rows);
-				  	//console.log(idx);				  	
-				    clearInterval(verify_async_Data);
-				  }
-				}, 100);
-		    			    	
-		    }
+		  console.log(promises);		  		  
 
-		    idx++;
-		    console.log([idx, len]);
-		    if (idx < len) {
-		      // Don't do anything special
-		      
-		    }  else {
-		      // Reset the counter
-		      idx = 0;
-		    }
 
-		    if(processing)
-		    {
-		    	setTimeout(doNext, 300);	
-		    }
-		    else
-		    {
-				ready_to_make_views();		    	
-		    }
-
-		    
-
-		    /*if(idx<len)
-		    {
-		    	setTimeout(doNext, 300);	
-		    }*/
-		     		    
-           }
-
-		  // And the code needs kicked off somewhere
-		  doNext();
+		  
+		  Promise.all(promises).then(values => {		  	   
+			  ready_to_make_views(); 			  
+		  });
 
 	}());
 
@@ -278,12 +224,10 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 
 		  if(element.Key == "MUL")
 		  {		  		
-		  		var request = ajax_resource.foreign_data(element.Field);
-		  		request.then(function(response){
-		  			element.key_data = response.data.f_data[0];
-		  			var foreign_object = $scope[element.key_data.REFERENCED_TABLE_NAME.capitalize()];
-		  			element.title = foreign_object.default+" ("+foreign_object.table+")";
-		  		});
+		  		
+	  			var foreign_object = $scope[element.key_data.REFERENCED_TABLE_NAME.capitalize()];
+	  			element.title = foreign_object.default+" ("+foreign_object.table+")";
+		  		
 		  }
 		  else
 		  {

@@ -17,6 +17,8 @@ function table(table,resource,table_headers,safe_index=false)
 	this.table_headers = table_headers;
 	
 	this.safe_table = safe_index;
+
+	this.loaded = [];
 	
 	this.init();
 	
@@ -26,6 +28,7 @@ function table(table,resource,table_headers,safe_index=false)
 	}
 	
 	this.default = null;
+	
 }
 
 table.prototype.init = function()
@@ -33,28 +36,56 @@ table.prototype.init = function()
 	
 	var self = this;
 
-	var request = this.resource.getAll(this);
-	request.then(function(response){
-		 self.rows = response.data.rows;		 			
-	});
+		var asyncprocess = new Promise( (resolve, reject) => {
 
-	var request2 = this.resource.getMETA_COLUMNS(this);
-	
-	
-    
-    request2.then(function(response){
-	 	self.columns = response.data.columns;
-	 	self.columns.forEach(function(element) {	
-    	if(element.Type.includes("varchar") && self.default == null)
-	  	{
-	  		 self.default = element.Field;			  	
-	  	}
-	  	if(element.Key.includes("PRI"))
-	  	{
-	  		 self.primary_key = element.Field;			  	
-	  	}
-	  });
-   });		
+			var request = this.resource.getAll(this);		
+
+
+			request.then(function(response){
+				 self.rows = response.data.rows;		 			
+			});
+
+			var request2 = this.resource.getMETA_COLUMNS(this);
+			
+			//self.loaded.push(request2);
+			var column_promises = [];		
+		    
+		    request2.then(function(response){
+			 	self.columns = response.data.columns;
+			 	self.columns.forEach(function(element,idx){			 					 	
+
+		    	if(element.Type.includes("varchar") && self.default == null)
+			  	{
+			  		 self.default = element.Field;			  	
+			  	}
+			  	if(element.Key.includes("PRI"))
+			  	{
+			  		 self.primary_key = element.Field;			  	
+			  	}
+			  	if(element.Key.includes("MUL"))
+			  	{
+			  		
+			  		var request3 = self.resource.foreign_data(element.Field);
+			  		column_promises.push(request3);
+			  		request3.then(function(response){			  			
+			  			element.key_data = response.data.f_data[0];
+			  		});
+			  	}
+			  });
+			  if(column_promises.length > 0)
+			  {
+			  	 Promise.all(column_promises).then(values => {		  	   
+					resolve("¡loaded!");	   			  
+				  });
+			  }
+			  else
+			  {
+			  	resolve("¡loaded!");
+			  }
+		   });
+		});
+	self.loaded.push(asyncprocess);
+
 }
 
 table.prototype.create = function(row,copy,frontable=false){
