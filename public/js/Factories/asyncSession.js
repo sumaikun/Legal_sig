@@ -11,3 +11,34 @@
 	}
 
 	f1();
+
+	(function () {
+    'use strict';
+
+    var SessionService = angular.module("services.Session", []);
+
+    pollingService
+        .factory('$session', function ($http) {
+
+            var defaultPollingTime = 10000;
+            var polls = [];
+
+            return {
+
+                startPolling: function (name, url, pollingTime, callback) {
+
+                    if(!polls[name]) {
+                        var poller = function () {
+                            return $http.get(url).then(function (response) {
+                                callback(response);
+                            });
+                        }
+                    }
+                    poller();
+                    polls[name] = setInterval(poller, pollingTime || defaultPollingTime);
+
+                }                
+            }
+        });
+
+}());

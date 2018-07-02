@@ -21,7 +21,12 @@
     font-size: 11px !important;
     min-width: 100px !important;
   }
+
+
+
 </style>
+
+{!!Html::style('css/resize_table.css')!!}
 
 <div class="row">
   <div class ="col-lg-12">
@@ -32,16 +37,17 @@
           <!--
           <button ng-click="Test_callbacks()">Test</button>
           -->
-          <select ng-change="select_table()"  ng-model="table_selected">
-            <option value="" label="-- Selecciona tabla --" disabled selected="selected"></option>           
-            <option ng-value="factores_view">Factores</option>
-            <option ng-value="categorias_view">Categorias</option>
-            <option ng-value="normas_view">Normas</option>
-            <option ng-value="articulos_view">Articulos</option>
+          <select onchange="select_table()" id="table_selected">
+            <!--<option value="" label="-- Selecciona tabla --" disabled selected="selected"></option>-->
+            <option value="" disabled selected="selected">-- Selecciona tabla --</option>           
+            <option value="factores">Factores</option>
+            <option value="categorias">Categorias</option>
+            <option value="normas">Normas</option>
+            <option value="articulos">Articulos</option>
             <!--<option ng-value="Literales">Literales</option>-->
-            <option ng-value="tipo_norma_view">Tipos norma</option>
-            <option ng-value="autoridad_emisora_view">Autoridades emisora</option>
-            <option ng-value="emision_view">Emisión</option>
+            <option value="tipo_norma">Tipos norma</option>
+            <option value="autoridad_emisora">Autoridades emisora</option>
+            <option value="emision">Emisión</option>
           </select>
           <div ng-include src="'/js/Views/Modal.html'"></div> 
           <div id="crud_content" class="table-responsive">

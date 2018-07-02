@@ -20,6 +20,7 @@
     {!!Html::style('css/sb-admin-2.css')!!}
     {!!Html::style('css/font-awesome.min.css')!!}
     {!!Html::style('css/bootstrap3-wysihtml5.min.css')!!}
+    {!!Html::style('css/overlay.css')!!}
       @yield('css')
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js" ></script>
     <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.11.0.js"></script>
@@ -27,10 +28,12 @@
     <script src="https://unpkg.com/ng-table@2.0.2/bundles/ng-table.min.js"></script>
     {{Html::script('js/Modules/app.js')}}
     {{Html::script('js/Directives/contenteditable.js')}}
+
     {{Html::script('js/Directives/timestampToDate.js')}}
     {{Html::script("js/Services/BrainServices.js")}}
     {{Html::script("js/Services/SystemServices.js")}}
     {{Html::script("js/Services/CrudServices.js")}}
+    {{Html::script('js/Directives/loading.js')}}
     {{Html::script("js/Controllers/BrainController.js")}}
     {{Html::script("js/Controllers/CrudController.js")}}
 
@@ -66,7 +69,19 @@ footer
 
 </style>
 
+
+
 <body ng-app="Appi">
+
+    <div class="popup loading" style="display: none;">
+      <div>
+        <p style="text-align:center">
+          <img src="/gif/LoadingAjax.gif"/>REQLEGAL...
+        </p>
+      </div>
+    </div>
+    
+
 
     <div id="wrapper">
 

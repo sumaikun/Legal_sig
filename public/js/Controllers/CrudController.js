@@ -2,6 +2,8 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 
 	//$scope.centros_cabecera = [{"title":"id"},{"title":"nombre"},{"title":"opciones"}];
 
+	$(".loading").show();
+
 	var self = this;
 
 	var gsd = new get_session_data({resource:SystemServices});
@@ -18,6 +20,7 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 
 	f1();
 	
+	$scope.table_selected = {};
 
 	$scope.new_element = {};
 
@@ -45,10 +48,12 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 
 	(function() {
 
+		  
+
 		  var tables_array = [$scope.Tipo_matriz,$scope.Factores,$scope.Categorias,$scope.Normas,$scope.Articulos,
 		  $scope.Literales,$scope.Tipo_norma,$scope.Autoridad_emisora,$scope.Emision,$scope.Estados_vigencia];
 
-		
+		  
 
 		  var promises = [];
 
@@ -60,8 +65,8 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 
 
 		  
-		  Promise.all(promises).then(values => {		  	   
-			  ready_to_make_views(); 			  
+		  Promise.all(promises).then(values => {		  	  			  	   
+			  ready_to_make_views();
 		  });
 
 	}());
@@ -69,7 +74,8 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 
 	
 
-	var ready_to_make_views = function(){	
+	var ready_to_make_views = function(){
+		
 
 		$scope.factores_view = $scope.Factores.ng_table_adapter(["id","nombre","id_Tipo_matriz"]);
 		//console.log($scope.factores_view);
@@ -108,6 +114,9 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 		$scope.articulos_view.ng_table_adapter_filter([{column:"id_Estados_vigencia",typefilter:"select"},{column:"id_Tipo_norma",typefilter:"select"},{column:"id_Emision",typefilter:"select"},{column:"id_Autoridad_emisora",typefilter:"select"}]);
 
 		$scope.articulos_view.crudcontrol([{title:'Editar',action:'edit',icon:'edit',role:[1,2]},{title:'eliminar',action:'delete_replace',icon:'trash',role:[1]},{title:'Derogar',action:'derogar',icon:'cube',role:[1,2],condition:{column:"id_Estados_vigencia",type:"equal",value:1}},{title:'Verificar Información de derogación',action:'verificacion_derogar',icon:'address-book',role:[1,2],condition:{column:"id_Estados_vigencia",type:"equal",value:2}},{title:'Remover derogación',action:'desderogar',icon:'cube',role:[1,2],condition:{column:"id_Estados_vigencia",type:"equal",value:2}}]);
+	
+		alert("tablas cargadas");
+		$(".loading").hide();		
 	}
 	
 
@@ -256,14 +265,25 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 	}
 
 
-	$scope.select_table = function()
-	{		
-			if($scope.table_selected != null)
-			{
-				$scope.current_view =  $scope.table_selected;
-				self.Ngcrudtable = new NgTableParams({},{ dataset: $scope.table_selected.rows});
-						
-			}
+	select_table = function()
+	{	
+		$(".loading").show();
+		console.log("Changed");
+		console.log($("#table_selected").val());		
+		if($("#table_selected").val() != null)
+		{			
+			$scope.current_view =  $scope[$("#table_selected").val()+"_view"];
+			console.log($scope.current_view.rows);
+			self.Ngcrudtable = new NgTableParams({},{ dataset: $scope.current_view.rows});
+			var reload = self.Ngcrudtable.reload();
+			reload.then(function(res){
+				console.log(self.Ngcrudtable);
+				$(".loading").hide();
+			});
+			
+			//						
+		}
+
 		
 	}
 
