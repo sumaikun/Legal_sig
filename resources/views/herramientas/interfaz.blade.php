@@ -11,12 +11,12 @@
       text-overflow: ellipsis;
       overflow: hidden;
   }*/
-  .table>tbody>tr>td>p{
+  /*.table>tbody>tr>td>p{
       max-width: 150px;
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
-  }
+  }*/
   select.form-control{
     font-size: 11px !important;
     min-width: 100px !important;

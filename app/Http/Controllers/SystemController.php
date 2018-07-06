@@ -78,7 +78,7 @@ class SystemController extends Controller
         				
         				$sql = "UPDATE ".$reference->TABLE_NAME." SET ".$reference->COLUMN_NAME." = ".$request->foid." WHERE ".$f_metadata->Column_name." = ".$result->$Column_name;	
 						
-						//DB::UPDATE(DB::RAW($sql));        				
+						DB::UPDATE(DB::RAW($sql));        				
         			}
         		}
         	}
@@ -88,7 +88,7 @@ class SystemController extends Controller
 
         $sql = "DELETE FROM ".$request->table." where ".$m_metadata->Column_name." = ".$request->id;
 
-        //DB::DELETE(DB::RAW($sql));
+        DB::DELETE(DB::RAW($sql));
 
         $array = array("status"=>1,"message"=>"Registro eliminado");
         return response()->json($array);

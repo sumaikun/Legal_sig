@@ -644,7 +644,8 @@ class ToolController extends Controller
             return 'no se puede derogar por la misma norma';
         }
 
-        /*$table = Derogacion::$table_name;
+        
+        $table = Derogacion::$table_name;
         $derogacion = new Derogacion;
         $dataset = DB::select(DB::raw("select max(id) as id from ".$table)); 
         $deg_id = 1+$dataset[0]->id;
@@ -669,7 +670,7 @@ class ToolController extends Controller
         
         $norma = Normas::find($id);
         $norma->id_Estados_vigencia = 2;
-        $norma->save();*/
+        $norma->save();
         return "Derogacion exitosa";
     }
 
@@ -680,7 +681,7 @@ class ToolController extends Controller
             return 'no se puede derogar con el mismo articulo';
         }
 
-        /*$table = Derogacion::$table_name;
+        $table = Derogacion::$table_name;
         $derogacion = new Derogacion;
         $dataset = DB::select(DB::raw("select max(id) as id from ".$table)); 
         $deg_id = 1+$dataset[0]->id;
@@ -698,7 +699,7 @@ class ToolController extends Controller
         {
             $literal->id_Estados_vigencia = 2;
             $literal->save();
-        }*/
+        }
         return "Derogacion exitosa";        
     }
 
@@ -777,7 +778,7 @@ class ToolController extends Controller
 
     public function anular_derogar_norma($id)
     {
-        /*$derogacion = Derogacion::where('id_derogado','=',$id)->where('tabla','=','normas')->first();
+        $derogacion = Derogacion::where('id_derogado','=',$id)->where('tabla','=','normas')->first();
         $derogacion ->delete();
         $norma = Normas::where('id','=',$id)->first();
         $norma->id_Estados_vigencia = 1;
@@ -786,14 +787,14 @@ class ToolController extends Controller
         foreach ($articulos as $articulo){            
             $articulo->id_Estados_vigencia = 1;
             $articulo->save();  
-        }*/
+        }
         return 'derogación anulada';
 
     }
 
     public function anular_derogar_articulo($id)
     {
-        /*$articulo = Articulos::where('id','=',$id)->first();
+        $articulo = Articulos::where('id','=',$id)->first();
         $derogacion = Derogacion::where('id_derogado','=',$id)->where('tabla','=','articulos')->first();
         if($derogacion !=  null)
         {
@@ -805,7 +806,7 @@ class ToolController extends Controller
         }
         
         $articulo->id_Estados_vigencia = 1;
-        $articulo->save();*/
+        $articulo->save();
         return 'derogación anulada';        
     }
 

@@ -132,6 +132,8 @@ class CrudController extends Controller
       
         $array = array("status"=>1,"sql"=>$sql);
 
+        DB::DELETE(DB::RAW($sql));
+
         return response()->json($array);  
 
     }
@@ -178,7 +180,7 @@ class CrudController extends Controller
                         
                         $sql = "DELETE FROM ".$reference->TABLE_NAME." WHERE ".$f_metadata->Column_name." = ".$result->$Column_name;    
                         
-                        //DB::UPDATE(DB::RAW($sql));                        
+                        DB::DELETE(DB::RAW($sql));                        
                     }
                 }
             }
@@ -190,7 +192,7 @@ class CrudController extends Controller
         $id = $this->id_column;
         $sql = "DELETE from ".$table." where ".$this->id_column."  = ".$array->$id;     
         return $sql;
-        //$this->p_connection->query($sql) or die($this->p_connection->error());
+        
 
     }
 
@@ -200,7 +202,7 @@ class CrudController extends Controller
         $id = $this->id_column;
         $sql = "Update ".$table." set deleted_at = '".$date."' where ".$this->id_column."  = ".$array->$id;
         return $sql;
-        //$this->p_connection->query($sql) or die($this->p_connection->error());
+        
 
     }
 
@@ -208,7 +210,7 @@ class CrudController extends Controller
     {
         
         
-        //$request->table = $request['table'];
+    
         $sql = "Insert into ".$table;
         $sql .= " (";
     

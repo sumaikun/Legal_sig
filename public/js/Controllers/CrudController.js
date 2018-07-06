@@ -101,7 +101,7 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 
 		$scope.tipo_norma_view.crudcontrol([{title:'Editar',action:'edit',icon:'edit',role:[1,2]},{title:'eliminar',action:'delete_replace',icon:'trash',role:[1]}]);
 
-		$scope.normas_view = $scope.Normas.ng_table_adapter(["id","numero","descripcion","id_Tipo_norma","id_Emision","id_Autoridad_emisora","id_Estados_vigencia"]);
+		$scope.normas_view = $scope.Normas.ng_table_adapter(["id","numero","id_Tipo_norma","id_Emision","id_Autoridad_emisora","id_Estados_vigencia"]);
 		
 		$scope.normas_view.ng_table_adapter_filter([{column:"id_Tipo_norma",typefilter:"select"},{column:"id_Emision",typefilter:"select"},{column:"id_Autoridad_emisora",typefilter:"select"},{column:"id_Estados_vigencia",typefilter:"select"}]);		
 
@@ -279,6 +279,8 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 			reload.then(function(res){
 				console.log(self.Ngcrudtable);
 				$(".loading").hide();
+
+
 			});
 			
 			//						
@@ -671,6 +673,14 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 		}
 	}
 
+	$scope.render_edit = function(data)
+	{
+		if($scope.session_roles(data.roles))
+		{
+			return true;
+		}
+	}
+
 	$scope.isWatching = function()
 	{
 		//console.log("is watching");
@@ -841,3 +851,10 @@ var om = new action("open_modal",{size:"modal-lg"});
 
 var array_process = [ma,om];*/
 
+$(document).ready(function(){
+  	$(document).on("focus", "#dynamicTable input[type='number']", function() {
+    	console.log("triggered");
+        	$(this).attr('autocomplete', 'off');
+    	
+	});
+});
