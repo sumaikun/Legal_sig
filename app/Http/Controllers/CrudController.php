@@ -112,6 +112,7 @@ class CrudController extends Controller
 
         $sql = $this->update($request->table,$array);
       
+       
        $array = array("status"=>1,"sql"=>$sql);
        return response()->json($array);
     }

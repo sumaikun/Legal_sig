@@ -1,44 +1,36 @@
 table{
      border-collapse: collapse;
     border-spacing: 0px;  
-    font-size:10px !important;
+    font-size:12px !important;
+    text-align: center;
   }
   
   
   td {
-    overflow: auto;
-    max-width:100%;
-white-space:nowrap;
-  }
-
-  /*.resize_column {
-    resize: both;
-    overflow: auto;
-    width: 120px;
-    height: 120px;
-    margin: 0px;
-    padding: 0px;
-    border: 1px solid black;
-    display:block;
-  }*/
+    /*overflow: auto;*/
+    /*max-width:100%;
+    white-space:nowrap;*/
+    text-overflow: ellipsis;
+    overflow: hidden;
+  } 
   
-  th
+  th.filter
   {
-    resize: both;
-    overflow: auto;
- 
+    resize: horizontal;
+    overflow: hidden;   
     margin: 0px;
     padding: 0px;
     border: 1px solid black;
       
   }
 
- /* td div.resize_column {
-    border: 0;
-    width: auto;
-    height: auto;
-    min-height: 20px;
-    min-width: 20px;
-    max-height: 100px;
-    max-width: 100px;
-  }*/
+  th.filter:first-child
+  {
+    width:80px;
+      
+  }
+
+  tr td:first-child{
+    resize: vertical;
+  }
+

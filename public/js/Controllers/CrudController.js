@@ -852,9 +852,17 @@ var om = new action("open_modal",{size:"modal-lg"});
 var array_process = [ma,om];*/
 
 $(document).ready(function(){
+  	
   	$(document).on("focus", "#dynamicTable input[type='number']", function() {
     	console.log("triggered");
         	$(this).attr('autocomplete', 'off');
     	
 	});
+
+	$(document).on("focus", "#dynamicTable input[type='text']", function() {
+    	console.log("triggered");
+        	$(this).attr('autocomplete', 'off');
+    	
+	});
+
 });
