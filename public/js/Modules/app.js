@@ -1,10 +1,10 @@
 var app = angular.module("Appi",["ngTable","ui.bootstrap"]);
 
-app.filter('trustedhtml', 
+/*app.filter('trustedhtml', 
    function($sce) { 
       return $sce.trustAsHtml; 
    }
-);
+);*/
 
 function table(table,resource,table_headers,safe_index=false)
 {
@@ -133,6 +133,10 @@ table.prototype.update = function(row){
 		if(response.data.status == 1)
 		{
 			alert("Editado");
+		}
+		else
+		{
+			alert(response.data.message);	
 		}
 	});
 };

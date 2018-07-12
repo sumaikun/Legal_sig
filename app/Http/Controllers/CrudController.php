@@ -107,12 +107,21 @@ class CrudController extends Controller
 
 
     public function persist($request)
-    {       
+    {        
+        $validation = $this->validation_on_action($request,"edit");
+
+        if($validation["status"] != 1)
+        {
+            return response()->json($validation);
+        }
+
+
         $array = $request->data;
 
         $sql = $this->update($request->table,$array);
       
-       
+        DB::UPDATE(DB::RAW($sql));
+
        $array = array("status"=>1,"sql"=>$sql);
        return response()->json($array);
     }
@@ -145,11 +154,13 @@ class CrudController extends Controller
 
         $sql = $this->insert($request->table,$array);
 
+        //DB::insert(DB::RAW($sql));
+
         $array = array("status"=>1,"message"=>"Nuevo elemento insertado","sql"=>$sql);
         return response()->json($array);
     }
 
-    public function delete_query($table,$array)
+    private function delete_query($table,$array)
     {
         //DELETE FOREIGN DATA;
 
@@ -197,7 +208,7 @@ class CrudController extends Controller
 
     }
 
-    public function safe_delete($table,$array)
+    private function safe_delete($table,$array)
     {
         $date = date('Y-m-d');
         $id = $this->id_column;
@@ -207,7 +218,7 @@ class CrudController extends Controller
 
     }
 
-    public function insert($table,$array)
+    private function insert($table,$array)
     {
         
         
@@ -246,7 +257,7 @@ class CrudController extends Controller
     }
     
     
-    public function update($table,$array)
+    private function update($table,$array)
     {
 
         $sql = "update ".$table;
@@ -278,16 +289,55 @@ class CrudController extends Controller
         return $sql;
     }
 
-    public function process_validation($validation)
-    {           
-        /*switch($validation->type)
+
+    private function validation_on_action($request,$json_action)
+    {
+        foreach($request->columns as $col)
+        {
+            if($col->Field == "Opciones")
+            {
+
+                foreach($col->actions as $action)
+                {
+                    if($action->action == $json_action)
+                    {
+
+                        if(isset($action->validation))
+                        {
+
+                            foreach($action->validation as $validation)
+                            {
+                                
+                                $res  = $this->process_validation($validation,$request); 
+                                
+                                
+                                if($res["status"] != 1)
+                                {
+                                     return $res;                                
+                                }    
+                            }
+                            
+                        }                                                
+                    }
+                }
+            }
+        }
+
+        return array("status"=>1);
+    }
+
+
+    private function process_validation($validation,$request)
+    {
+
+        switch($validation->type)
         {
             case "FOREIGN_VALUES":
                 $sql = "SELECT * from  $validation->with where $validation->foreign_key = ".$request->data->id." ";               
-                $result = $this->query($sql);
+                $result = DB::SELECT(DB::RAW($sql));
                 if($result)
                 {
-                    $n = mysql_num_rows($result);   
+                    $n = count($result);   
                 }
                 else{
                     $n = 0;
@@ -297,12 +347,40 @@ class CrudController extends Controller
                    $array = array("status"=>2,"message"=>"Existen valores relacionados a este tabla que impiden su eliminación");
                 }               
                 break;
+            case "existence_on_edit":
+                $sql = "Select * from ".$request->table." where ";
+                $count = 1;
+                foreach($validation->columns as $column)
+                {
+                    if($count!=count($validation->columns))
+                    {
+                        $sql .= $column." = '".$request->data->$column."'  and ";
+                    }
+                    else
+                    {
+                        $sql .= $column." = '".$request->data->$column."'";
+                    }                    
+                    $count++;
+                }
+                
+                $result = DB::SELECT(DB::RAW($sql));
+
+
+                
+                if($result[0]->id != $request->data->id || count($result)>1)
+                {
+                    $array = array("status"=>2,"message"=>"Existen valores similares en la base de datos por favor revise los datos enviados para evitar el ingreso de un registro repetido");
+                }
+
+                $array = array("status"=>1);
+                break;    
             default:
+                $array = array("status"=>1);
                 break;
         }
         
-       $array = array("status"=>1);
-       return response()->json($array);*/
+       //print_r($array);
+       return $array;
     }
 
     public function foreign_data($request)

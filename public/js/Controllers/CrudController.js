@@ -81,31 +81,31 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 		//console.log($scope.factores_view);
 		$scope.factores_view.ng_table_adapter_filter([{column:"id_Tipo_matriz",typefilter:"select"}]);
 
-		$scope.factores_view.crudcontrol([{title:'Editar',action:'edit',icon:'edit',role:[1,2]},{title:'eliminar',action:'delete_replace',icon:'trash',role:[1]}]);
+		$scope.factores_view.crudcontrol([{title:'Editar',action:'edit',icon:'edit',role:[1,2],validation:[{type:'existence_on_edit',columns:["nombre","id_Tipo_matriz"]}]},{title:'eliminar',action:'delete_replace',icon:'trash',role:[1]}]);
 
 		$scope.categorias_view = $scope.Categorias.ng_table_adapter(["id","nombre","id_Factores"]);
 		//console.log($scope.factores_view);
 		$scope.categorias_view.ng_table_adapter_filter([{column:"id_Factores",typefilter:"select"}]);
 
-		$scope.categorias_view.crudcontrol([{title:'Editar',action:'edit',icon:'edit',role:[1,2]},{title:'eliminar',action:'delete_replace',icon:'trash',role:[1]}]);
+		$scope.categorias_view.crudcontrol([{title:'Editar',action:'edit',icon:'edit',role:[1,2],validation:[{type:'existence_on_edit',columns:["nombre","id_Factores"]}]},{title:'eliminar',action:'delete_replace',icon:'trash',role:[1]}]);
 
 		$scope.autoridad_emisora_view = $scope.Autoridad_emisora.ng_table_adapter(["id","nombre"]);
 		
-		$scope.autoridad_emisora_view.crudcontrol([{title:'Editar',action:'edit',icon:'edit',role:[1,2]},{title:'eliminar',action:'delete_replace',icon:'trash',role:[1]}]);
+		$scope.autoridad_emisora_view.crudcontrol([{title:'Editar',action:'edit',icon:'edit',role:[1,2],validation:[{type:'existence_on_edit',columns:["nombre"]}]},{title:'eliminar',action:'delete_replace',icon:'trash',role:[1]}]);
 
 		$scope.emision_view = $scope.Emision.ng_table_adapter(["id","year"]);
 		
-		$scope.emision_view.crudcontrol([{title:'Editar',action:'edit',icon:'edit',role:[1,2]},{title:'eliminar',action:'delete_replace',icon:'trash',role:[1]}]);
+		$scope.emision_view.crudcontrol([{title:'Editar',action:'edit',icon:'edit',role:[1,2],validation:[{type:'existence_on_edit',columns:["year"]}]},{title:'eliminar',action:'delete_replace',icon:'trash',role:[1]}]);
 
 		$scope.tipo_norma_view = $scope.Tipo_norma.ng_table_adapter(["id","nombre"]);
 
-		$scope.tipo_norma_view.crudcontrol([{title:'Editar',action:'edit',icon:'edit',role:[1,2]},{title:'eliminar',action:'delete_replace',icon:'trash',role:[1]}]);
+		$scope.tipo_norma_view.crudcontrol([{title:'Editar',action:'edit',icon:'edit',role:[1,2],validation:[{type:'existence_on_edit',columns:["nombre"]}]},{title:'eliminar',action:'delete_replace',icon:'trash',role:[1]}]);
 
 		$scope.normas_view = $scope.Normas.ng_table_adapter(["id","numero","id_Tipo_norma","id_Emision","id_Autoridad_emisora","id_Estados_vigencia"]);
 		
 		$scope.normas_view.ng_table_adapter_filter([{column:"id_Tipo_norma",typefilter:"select"},{column:"id_Emision",typefilter:"select"},{column:"id_Autoridad_emisora",typefilter:"select"},{column:"id_Estados_vigencia",typefilter:"select"}]);		
 
-		$scope.normas_view.crudcontrol([{title:'Editar',action:'edit',icon:'edit',role:[1,2]},{title:'eliminar',action:'delete_replace',icon:'trash',role:[1]},{title:'Derogar',action:'derogar',icon:'cube',role:[1,2],condition:{column:"id_Estados_vigencia",type:"equal",value:1}},{title:'Remover derogación',action:'desderogar',icon:'cube',role:[1,2],condition:{column:"id_Estados_vigencia",type:"equal",value:2}},{title:'Verificar Información de derogación',action:'verificacion_derogar',icon:'address-book',role:[1,2],condition:{column:"id_Estados_vigencia",type:"equal",value:2}}]);
+		$scope.normas_view.crudcontrol([{title:'Editar',action:'edit',icon:'edit',role:[1,2],validation:[{type:'existence_on_edit',columns:["numero","id_Tipo_norma","id_Emision"]}]},{title:'eliminar',action:'delete_replace',icon:'trash',role:[1]},{title:'Derogar',action:'derogar',icon:'cube',role:[1,2],condition:{column:"id_Estados_vigencia",type:"equal",value:1}},{title:'Remover derogación',action:'desderogar',icon:'cube',role:[1,2],condition:{column:"id_Estados_vigencia",type:"equal",value:2}},{title:'Verificar Información de derogación',action:'verificacion_derogar',icon:'address-book',role:[1,2],condition:{column:"id_Estados_vigencia",type:"equal",value:2}}]);
 
 		$scope.articulos_view = $scope.Articulos.ng_table_adapter(["id","numero","id_Normas","id_Estados_vigencia"]);
 
@@ -113,7 +113,7 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 
 		$scope.articulos_view.ng_table_adapter_filter([{column:"id_Estados_vigencia",typefilter:"select"},{column:"id_Tipo_norma",typefilter:"select"},{column:"id_Emision",typefilter:"select"},{column:"id_Autoridad_emisora",typefilter:"select"}]);
 
-		$scope.articulos_view.crudcontrol([{title:'Editar',action:'edit',icon:'edit',role:[1,2]},{title:'eliminar',action:'delete_replace',icon:'trash',role:[1]},{title:'Derogar',action:'derogar',icon:'cube',role:[1,2],condition:{column:"id_Estados_vigencia",type:"equal",value:1}},{title:'Verificar Información de derogación',action:'verificacion_derogar',icon:'address-book',role:[1,2],condition:{column:"id_Estados_vigencia",type:"equal",value:2}},{title:'Remover derogación',action:'desderogar',icon:'cube',role:[1,2],condition:{column:"id_Estados_vigencia",type:"equal",value:2}}]);
+		$scope.articulos_view.crudcontrol([{title:'Editar',action:'edit',icon:'edit',role:[1,2],validation:[{type:'existence_on_edit',columns:["numero","id_Normas"]}]},{title:'eliminar',action:'delete_replace',icon:'trash',role:[1]},{title:'Derogar',action:'derogar',icon:'cube',role:[1,2],condition:{column:"id_Estados_vigencia",type:"equal",value:1}},{title:'Verificar Información de derogación',action:'verificacion_derogar',icon:'address-book',role:[1,2],condition:{column:"id_Estados_vigencia",type:"equal",value:2}},{title:'Remover derogación',action:'desderogar',icon:'cube',role:[1,2],condition:{column:"id_Estados_vigencia",type:"equal",value:2}}]);
 	
 		alert("tablas cargadas");
 		$(".loading").hide();		
@@ -304,8 +304,21 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 
 	$scope.edit = function(row,model)
 	{
-		//console.log(row);		
-		model.update(row);		
+		console.log(row);
+		
+		var register = angular.copy(row);
+
+		model.columns.forEach(function(column){
+			//console.log(column);
+			if(column.foreign_column != null)
+			{
+				delete register[column.Field];
+			}
+		});
+
+		console.log(register);
+
+		model.update(register);		
 	}
 	
 	$scope.delete = function(row,model)
@@ -329,7 +342,7 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 	$scope.execute_action = function(row,model,action)
 	{
 		console.log(action);
-		   switch (action) {
+		   switch (action.action) {
 			    case "edit":
 			        $scope.edit(row,model);
 			        break;
