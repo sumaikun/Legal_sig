@@ -362,7 +362,7 @@ class CrudController extends Controller
                     }                    
                     $count++;
                 }
-                
+
                 $result = DB::SELECT(DB::RAW($sql));
 
 

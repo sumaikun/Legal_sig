@@ -24,7 +24,7 @@ app.controller('BrainController',['$scope','BrainServices','$compile','$window',
 		request.then(function(response){	
 			console.log(response.data);
 			$scope.modal = 	response.data;
-			$scope.modal.view = "/"+response.data.view;				
+			$scope.modal.view = global_url+"/"+response.data.view;				
 			if(response.data.status == 'not done')
 			{				
 				console.log($scope.modal); 
@@ -102,6 +102,11 @@ app.controller('BrainController',['$scope','BrainServices','$compile','$window',
 
 	}
 
-
+	$scope.relative_path = function(path)
+	{
+		var url = global_url+path;
+		console.log(url);
+		return url;
+	}
 
 }]);

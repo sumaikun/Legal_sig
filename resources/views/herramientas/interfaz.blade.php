@@ -49,9 +49,9 @@
             <option value="autoridad_emisora">Autoridades emisora</option>
             <option value="emision">Emisión</option>
           </select>
-          <div ng-include src="'/js/Views/Modal.html'"></div> 
+          <div ng-include src="'{{ url('/') }}/js/Views/Modal.html'"></div> 
           <div id="crud_content" class="table-responsive">
-             <div ng-include src="'/js/Views/Crud_table.html'"></div>
+             <div ng-include src="'{{ url('/') }}/js/Views/Crud_table.html'"></div>
           </div>
         </div>
       </div> 

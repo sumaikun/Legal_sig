@@ -4,7 +4,12 @@
 
 <head>
 
-             
+    <script>
+  
+    var global_url = "{{ url('/') }}";
+
+    </script>
+
     {{Html::script('js/jquery-1.8.3.js')}}
     {{Html::script('js/jquery.min.js')}}
 
@@ -76,7 +81,7 @@ footer
     <div class="popup loading" style="display: none;">
       <div>
         <p style="text-align:center">
-          <img src="/gif/LoadingAjax.gif"/>REQLEGAL...
+          <img src="{{ url('/') }}/gif/LoadingAjax.gif"/>REQLEGAL...
         </p>
       </div>
     </div>
@@ -122,7 +127,7 @@ footer
                         Notificación
                       </h4>
                     </div>
-                    <div class="modal-body" ng-include="modal.view">
+                    <div class="modal-body" ng-include="(modal.view)">
                      
                     </div>
                     <div class="modal-footer">
@@ -180,7 +185,7 @@ footer
 
               <ul class="nav navbar-top-links navbar-right">
                    @if(Auth::user()->rol_id == 1)
-                   <li class="dropdown" ng-include src="'/js/Views/asistent.html'">                      
+                   <li class="dropdown" ng-include src="'{{ url('/') }}/js/Views/asistent.html'">                      
                   </li>
                   @endif
                   <li class="dropdown">

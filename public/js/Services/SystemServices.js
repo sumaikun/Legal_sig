@@ -6,27 +6,27 @@ app.factory('SystemServices',['$http','$q',function($http,$q){
 
     SystemServices.replace_delete = function(data)
     {
-    	return $http.post("/angular/delete_replace",data);
+    	return $http.post(global_url+"/angular/delete_replace",data);
     }
 
     SystemServices.derogar = function(data)
     {
-        return $http.post("/angular/derogar",data);
+        return $http.post(global_url+"/angular/derogar",data);
     }
 
     SystemServices.desderogar = function(data)
     {
-        return $http.post("/angular/desderogar",data);
+        return $http.post(global_url+"/angular/desderogar",data);
     }
 
     SystemServices.get_sessions = function()
     {
-        return $http.post("/angular/get_sessions");   
+        return $http.post(global_url+"/angular/get_sessions");   
     }
 
     SystemServices.derogar_info = function(data)
     {
-        return $http.post("/angular/derogar_info",data);   
+        return $http.post(global_url+"/angular/derogar_info",data);   
     }
 
 
