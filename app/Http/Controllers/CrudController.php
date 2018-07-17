@@ -190,7 +190,7 @@ class CrudController extends Controller
 
         $sql = $this->insert($request->table,$array);
 
-        //DB::insert(DB::RAW($sql));
+        DB::insert(DB::RAW($sql));
 
         $array = array("status"=>1,"message"=>"Nuevo elemento insertado","sql"=>$sql);
         return response()->json($array);
