@@ -54,11 +54,11 @@ return [
 
         'mysql' => [
             'driver' => 'mysql',
-            'host' => env('DB_HOST', 'localhost'),
-            'port' => env('DB_PORT', '3306'),
-            'database' => env('DB_DATABASE', 'db_reqlegal'),
-            'username' => env('DB_USERNAME', 'user_reqlegal'),
-            'password' => env('DB_PASSWORD', 'SIGrqLg2016'),
+            'host' => '127.0.0.1',
+            'port' => 3306,
+            'database' => 'reqlegal',//env('DB_DATABASE', 'db_reqlegal'),
+            'username' => 'root',//env('root', 'user_reqlegal'),
+            'password' => '',//env('', 'SIGrqLg2016'),
             'charset' => 'utf8',
             'collation' => 'utf8_unicode_ci',
             'prefix' => '',

@@ -48,6 +48,10 @@
 
     </div>
 
+    <script>
+        localStorage.clear();
+    </script>
+
     <div id="login-form">
 
         <h1>Iniciar Sesi&oacute;n</h1>

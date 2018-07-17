@@ -6,11 +6,35 @@ var app = angular.module("Appi",["ngTable","ui.bootstrap"]);
    }
 );*/
 
+app.factory('sessionInjector',[function() {  
+    var sessionInjector = {
+        request: function(config) {            
+            config.headers['x-session-token'] = $('meta[name="csrf-token"]').attr('content');            
+            return config;
+        }
+    };
+    return sessionInjector;
+}]);
+
+
+app.config(['$httpProvider', function($httpProvider) {  
+    $httpProvider.interceptors.push('sessionInjector');
+}]);
+
+
 function table(table,resource,table_headers,safe_index=false)
 {
 	var resulset = null;
 	
 	this.table = table;	
+
+	if(window.localStorage.getItem(this.table) != null)
+	{
+		//console.log("save in memory");
+		var item = JSON.parse(window.localStorage.getItem(this.table));
+		//return item;
+		//return window.localStorage.getItem(this.table);
+	}
 	
 	this.resource = resource;
 	
@@ -18,9 +42,9 @@ function table(table,resource,table_headers,safe_index=false)
 	
 	this.safe_table = safe_index;
 
-	this.loaded = [];
+	//this.loaded = [];
 	
-	this.init();
+	this.ready = this.init();
 	
 	this.test = function()
 	{
@@ -28,6 +52,8 @@ function table(table,resource,table_headers,safe_index=false)
 	}
 	
 	this.default = null;
+
+	this.save_state();
 	
 }
 
@@ -84,9 +110,22 @@ table.prototype.init = function()
 			  }
 		   });
 		});
-	self.loaded.push(asyncprocess);
+	//self.loaded.push(asyncprocess);
+
+	return asyncprocess;
 
 }
+
+
+table.prototype.save_state = function()
+{
+	var self = this;
+	self.ready.then(function(response){
+
+		window.localStorage.setItem(self.table,JSON.stringify(self));
+	});
+}
+
 
 table.prototype.create = function(row,copy,frontable=false){
 	

@@ -9,7 +9,7 @@ app.controller('BrainController',['$scope','BrainServices','$compile','$window',
 	$scope.test = function(){
 		var request = BrainServices.test();
 		request.then(function(response){			
-			console.log(response);
+			//console.log(response);
 			$scope.years = response.data;
 			$("#myModaltest").modal('show');
 		});
@@ -22,7 +22,7 @@ app.controller('BrainController',['$scope','BrainServices','$compile','$window',
 	$scope.verify_first_asistant_view = function(){
 		var request = BrainServices.verify_first_asistant_view();
 		request.then(function(response){	
-			console.log(response.data);
+			//console.log(response.data);
 			$scope.modal = 	response.data;
 			$scope.modal.view = global_url+"/"+response.data.view;				
 			if(response.data.status == 'not done')
@@ -105,7 +105,7 @@ app.controller('BrainController',['$scope','BrainServices','$compile','$window',
 	$scope.relative_path = function(path)
 	{
 		var url = global_url+path;
-		console.log(url);
+		//console.log(url);
 		return url;
 	}
 

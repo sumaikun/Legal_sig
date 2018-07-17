@@ -29,8 +29,8 @@ return [
     |
     */
 
-    //'host' => env('MAIL_HOST', 'mail.grupo-sig.com'),
-    'host' => env('MAIL_HOST', 'smtp.gmail.com'),
+    'host' => env('MAIL_HOST', 'mail.grupo-sig.com'),
+    //'host' => env('MAIL_HOST', 'smtp.gmail.com'),
     /*
     |--------------------------------------------------------------------------
     | SMTP Host Port
@@ -42,7 +42,7 @@ return [
     |
     */
 
-    'port' => env('MAIL_PORT', 25),
+    'port' => env('MAIL_PORT', 587),
 
     /*
     |--------------------------------------------------------------------------
@@ -55,8 +55,8 @@ return [
     |
     */
 
-    'from' => ['address' => 'sig.gruposig@gmail.com', 'name' => 'SIG'],
-    //'from' => array('address' => 'soporteit@grupo-sig.com', 'name' => 'Soporte IT'),
+    //'from' => ['address' => 'sig.gruposig@gmail.com', 'name' => 'SIG'],
+    'from' => array('address' => 'consultorialegal@grupo-sig.com', 'name' => 'Soporte IT'),
     /*
     |--------------------------------------------------------------------------
     | E-Mail Encryption Protocol
@@ -81,7 +81,8 @@ return [
     |
     */
 
-    'username' => env('MAIL_USERNAME','sig.gruposig@gmail.com'),
+    //'username' => env('MAIL_USERNAME','sig.gruposig@gmail.com'),
+    'username' => env('MAIL_USERNAME','consultorialegal@grupo-sig.com'),
 
     /*
     |--------------------------------------------------------------------------
@@ -94,7 +95,8 @@ return [
     |
     */
 
-    'password' => env('MAIL_PASSWORD','fbSIG4235'),
+    //'password' => env('MAIL_PASSWORD','fbSIG4235'),
+    'password' => env('MAIL_PASSWORD','RQlegal-2016-'),
 
     /*
     |--------------------------------------------------------------------------

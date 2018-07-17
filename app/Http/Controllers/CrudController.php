@@ -107,14 +107,28 @@ class CrudController extends Controller
 
 
     public function persist($request)
-    {        
-        $validation = $this->validation_on_action($request,"edit");
+    {
+        //$validation = $request->validation;
 
-        if($validation["status"] != 1)
+        foreach($request->validation as $validation)
         {
-            return response()->json($validation);
+            if($validation->type = "edit_or_create" )
+            {
+                $validate = $validation;
+                $validate->type = "existence_on_edit";
+                $f_validate = $this->process_validation($validate,$request);
+            }
+
+            else
+            {
+                $f_validate = array("status"=>1);
+            }
         }
 
+        if($f_validate["status"]!= 1)
+        {
+            return response()->json($f_validate);
+        }               
 
         $array = $request->data;
 
@@ -124,6 +138,7 @@ class CrudController extends Controller
 
        $array = array("status"=>1,"sql"=>$sql);
        return response()->json($array);
+        
     }
 
     public function delete($request)
@@ -150,6 +165,27 @@ class CrudController extends Controller
 
     public function create($request)
     {
+
+        foreach($request->validation as $validation)
+        {
+            if($validation->type = "edit_or_create" )
+            {
+                $validate = $validation;
+                $validate->type = "existence_on_create";
+                $f_validate = $this->process_validation($validate,$request);
+            }
+
+            else
+            {
+                $f_validate = array("status"=>1);
+            }
+        }
+
+        if($f_validate["status"]!= 1)
+        {
+            return response()->json($f_validate);
+        }       
+
         $array = $request->data;
 
         $sql = $this->insert($request->table,$array);
@@ -290,43 +326,6 @@ class CrudController extends Controller
     }
 
 
-    private function validation_on_action($request,$json_action)
-    {
-        foreach($request->columns as $col)
-        {
-            if($col->Field == "Opciones")
-            {
-
-                foreach($col->actions as $action)
-                {
-                    if($action->action == $json_action)
-                    {
-
-                        if(isset($action->validation))
-                        {
-
-                            foreach($action->validation as $validation)
-                            {
-                                
-                                $res  = $this->process_validation($validation,$request); 
-                                
-                                
-                                if($res["status"] != 1)
-                                {
-                                     return $res;                                
-                                }    
-                            }
-                            
-                        }                                                
-                    }
-                }
-            }
-        }
-
-        return array("status"=>1);
-    }
-
-
     private function process_validation($validation,$request)
     {
 
@@ -373,7 +372,37 @@ class CrudController extends Controller
                 }
 
                 $array = array("status"=>1);
-                break;    
+                break;
+            case "existence_on_create":
+                    $sql = "Select * from ".$request->table." where ";
+                    $count = 1;
+                    foreach($validation->columns as $column)
+                    {
+                        if($count!=count($validation->columns))
+                        {
+                            $sql .= $column." = '".$request->data->$column."'  and ";
+                        }
+                        else
+                        {
+                            $sql .= $column." = '".$request->data->$column."'";
+                        }                    
+                        $count++;
+                    }
+
+                    //echo $sql;
+
+                    $result = DB::SELECT(DB::RAW($sql));
+
+
+                    
+                    if(count($result)>1)
+                    {
+                        
+                        $array = array("status"=>2,"message"=>"Ya hay un registro igual en la base de datos");
+                    }
+
+                    $array = array("status"=>1);
+            break;    
             default:
                 $array = array("status"=>1);
                 break;

@@ -6,7 +6,7 @@
 <!--
 <button ng-click="reload_ngtable('Ngcrudtable')">Actualizar</button>
 -->
-<table ng-init="init_table(Factores)" id="dynamicTable" ng-table-dynamic="CC.Ngcrudtable with current_view.columns" class=" table table-responsive table-bordered" show-filter='true'>
+<table ng-init="init_table(Factores)" id="dynamicTable" ng-table-dynamic="CC.Ngcrudtable with current_view.columns" class=" table table-responsive table-bordered" show-filter='true' style=" max-height:606px !important;">
   <tr ng-repeat="row in $data">    
     <td ng-repeat="col in current_view.columns" ng-init="render_option = false">                  
       <p ng-show="col.Field != 'Opciones' && col.Type != 'timestamp' && col.Key != 'MUL' && col.foreign_column == null" ng-model="row[col.Field]" onclick="big_text_edit(this)" class="text_table" contenteditable="{{column_behavior(col)}}" >
@@ -53,16 +53,24 @@
       </div>
 
       <div ng-show="col.Field == 'Opciones'">
-        <button  ng-repeat="action in col.actions" title="{{action.title}}" ng-show="check_session_action(action.role) && evaluate_column_conditions(action.condition,row) " ng-click="execute_action(row,current_view,action)"><i class="fas fa-{{action.icon}}"></i></button>       
+        <button  ng-repeat="action in col.actions" ng-show="action.not_render == null" title="{{action.title}}" ng-show="check_session_action(action.role) && evaluate_column_conditions(action.condition,row) " ng-click="execute_action(row,current_view,action)"><i class="fas fa-{{action.icon}}"></i></button>       
       </div>                                      
     </td>
   
   </tr>
   <tr ng-if ="current_view != null ">    
     <td ng-repeat="col in current_view.columns"  ng-show="col.show == true" onclick="big_text_edit(this)">
-      <p ng-model="new_element[col.Field]" contenteditable="{{column_behavior(col)}}" ></p>
+      <p class="editable_table_content"  ng-show="session_roles([1,2])" ng-model="new_element[col.Field]" contenteditable="{{column_behavior(col)}}" ></p>
+      <div ng-if ="col.Key == 'MUL' &&  session_roles([1,2])" >        
+        <span  ng-show="render_option == false " class="text_table" >{{foreign_value(col.key_data,row[col.Field])}}</span>
+        <select class="form-control" ng-model="new_element[col.Field]">
+          <option  ng-repeat="selector in dynamicSelectArray(col.key_data.REFERENCED_TABLE_NAME)"  ng-value="selector[col.key_data.REFERENCED_COLUMN_NAME]"   >
+            {{selector[key_value]}}
+          </option>
+        </select>
+      </div>
     </td>
-    <td><button ng-click="create(new_element,current_view)">Agregar</button></td>    
+    <td><button ng-show="session_roles([1,2])" ng-click="create(new_element,current_view)">Agregar</button></td>    
   </tr> 
 </table>
 
