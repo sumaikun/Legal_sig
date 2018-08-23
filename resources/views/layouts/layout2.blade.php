@@ -4,6 +4,12 @@
 
 <head>
 
+  <script>
+  
+    var global_url = "{{ url('/') }}";
+
+    </script>
+
 {{Html::script('js/jquery-1.8.3.js')}}
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -21,6 +27,22 @@
       <script src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
       <script type="text/javascript" src="https://cdn.datatables.net/fixedheader/3.1.2/js/dataTables.fixedHeader.min.js"></script>
       <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/fixedheader/3.1.2/css/fixedHeader.dataTables.min.css">
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js" ></script>
+    <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.11.0.js"></script>
+    <link rel="stylesheet"; href="https://unpkg.com/ng-table@2.0.2/bundles/ng-table.min.css">
+    <script src="https://unpkg.com/ng-table@2.0.2/bundles/ng-table.min.js"></script>
+    {{Html::script('js/Modules/app.js')}}
+    {{Html::script('js/Directives/contenteditable.js')}}
+
+    {{Html::script('js/Directives/timestampToDate.js')}}
+    {{Html::script("js/Services/BrainServices.js")}}
+    {{Html::script("js/Services/SystemServices.js")}}
+    {{Html::script("js/Services/CrudServices.js")}}
+    {{Html::script('js/Directives/loading.js')}}
+    {{Html::script("js/Controllers/BrainController.js")}}    
+    {{Html::script("js/Controllers/MatrizController.js")}}
 
       @yield('css')
 
@@ -59,6 +81,15 @@
 </head>
 
 <body>
+
+    <div class="popup loading" style="display: none;">
+      <div>
+        <p style="text-align:center">
+          <img src="{{ url('/') }}/gif/LoadingAjax.gif"/>REQLEGAL...
+        </p>
+      </div>
+    </div>
+
 <div id=lease>
   <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0" >
             <div class="navbar-header" >

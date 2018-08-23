@@ -6,6 +6,50 @@ var app = angular.module("Appi",["ngTable","ui.bootstrap"]);
    }
 );*/
 
+
+(function() {
+  
+
+  app.config(setConfigPhaseSettings);
+
+  setConfigPhaseSettings.$inject = ["ngTableFilterConfigProvider"];
+
+  function setConfigPhaseSettings(ngTableFilterConfigProvider) {
+    var filterAliasUrls = {
+      "dynamic-select": "dynamic-select.html",
+      
+    };
+    ngTableFilterConfigProvider.setConfig({
+      aliasUrls: filterAliasUrls
+    });
+
+    // optionally set a default url to resolve alias names that have not been explicitly registered
+    // if you don't set one, then 'ng-table/filters/' will be used by default
+    ngTableFilterConfigProvider.setConfig({
+      defaultBaseUrl: "ng-table/filters/"
+    });
+
+  }
+})();
+
+function accessScope(node, func) {
+    var scope = angular.element(document.querySelector(node)).scope();
+    if(!scope.$$phase)
+    {
+    	scope.$apply(func);	
+    }
+    
+}
+
+function getfromScope(node,key)
+{
+	 var scope = angular.element(document.querySelector(node)).scope();
+	 return scope[key];
+}
+
+
+
+
 app.factory('sessionInjector',[function() {  
     var sessionInjector = {
         request: function(config) {            
@@ -64,51 +108,51 @@ table.prototype.init = function()
 
 		var asyncprocess = new Promise( (resolve, reject) => {
 
-			var request = this.resource.getAll(this);		
+			var request = self.resource.getAll(self);		
 
 
 			request.then(function(response){
-				 self.rows = response.data.rows;		 			
-			});
-
-			var request2 = this.resource.getMETA_COLUMNS(this);
+				 self.rows = response.data.rows;
+				 var request2 = self.resource.getMETA_COLUMNS(self);
 			
-			//self.loaded.push(request2);
-			var column_promises = [];		
-		    
-		    request2.then(function(response){
-			 	self.columns = response.data.columns;
-			 	self.columns.forEach(function(element,idx){			 					 	
+					//self.loaded.push(request2);
+					var column_promises = [];		
+				    
+				    request2.then(function(response){
 
-		    	if(element.Type.includes("varchar") && self.default == null)
-			  	{
-			  		 self.default = element.Field;			  	
-			  	}
-			  	if(element.Key.includes("PRI"))
-			  	{
-			  		 self.primary_key = element.Field;			  	
-			  	}
-			  	if(element.Key.includes("MUL"))
-			  	{
-			  		
-			  		var request3 = self.resource.foreign_data(element.Field);
-			  		column_promises.push(request3);
-			  		request3.then(function(response){			  			
-			  			element.key_data = response.data.f_data[0];
-			  		});
-			  	}
-			  });
-			  if(column_promises.length > 0)
-			  {
-			  	 Promise.all(column_promises).then(values => {		  	   
-					resolve("¡loaded!");	   			  
-				  });
-			  }
-			  else
-			  {
-			  	resolve("¡loaded!");
-			  }
-		   });
+					 	self.columns = response.data.columns;
+					 	self.columns.forEach(function(element,idx){			 					 	
+
+				    	if(element.Type.includes("varchar") && self.default == null)
+					  	{
+					  		 self.default = element.Field;			  	
+					  	}
+					  	if(element.Key.includes("PRI"))
+					  	{
+					  		 self.primary_key = element.Field;			  	
+					  	}
+					  	if(element.Key.includes("MUL"))
+					  	{
+					  		
+					  		var request3 = self.resource.foreign_data(element.Field,self.table);
+					  		column_promises.push(request3);
+					  		request3.then(function(response){			  			
+					  			element.key_data = response.data.f_data[0];
+					  		});
+					  	}
+					  });
+					  if(column_promises.length > 0)
+					  {
+					  	 Promise.all(column_promises).then(values => {		  	   
+							resolve("¡loaded!");	   			  
+						  });
+					  }
+					  else
+					  {
+					  	resolve("¡loaded!");
+					  }
+			   });
+			});			
 		});
 	//self.loaded.push(asyncprocess);
 
@@ -122,7 +166,7 @@ table.prototype.save_state = function()
 	var self = this;
 	self.ready.then(function(response){
 
-		window.localStorage.setItem(self.table,JSON.stringify(self));
+		//window.localStorage.setItem(self.table,JSON.stringify(self));
 	});
 }
 
@@ -238,6 +282,8 @@ Array.prototype.contains = function(obj) {
 
 var stop = {proccess:"STOP"};
 
+
+
 function action()
 {
 	this.init = function()
@@ -261,10 +307,145 @@ function vertex(actiona,actionb)
 function node(vertex,edges)
 {
 	this.vertex = vertex;
-	var total = edges.length;
-	
-
-
-	      
+	var total = edges.length;	      
 }
 
+
+
+var info_alert_from_request = function(properties)
+{
+	this.ajaxmethod = properties.ajaxmethod;
+	this.async_process = "";
+	//console.log(this.ajaxmethod);
+	this.execute = function(){
+		self = this;
+		this.async_process = new Promise(function(resolve, reject) {
+			self.ajaxmethod.then(function(response)
+			{
+				self.message = response.data.message;
+				resolve(response.data.message);
+			});
+			self.ajaxmethod.catch(function(response) {
+			  alert("ocurrio un error");
+			  console.error('Gists error', response.status, response.data);
+			  reject("error");
+			});
+		});			
+	}
+
+	this.output = function(){
+		//console.log(this);
+		this.async_process.then(function(res){
+			alert(res);	
+		});
+		
+	}
+}
+
+
+
+var open_modal = function(properties)
+{	
+	this.size = properties.size;
+	this.title = properties.title;	
+	this.content = properties.content;
+	
+	if(properties.SelectModal != null)
+	{
+		this.SelectModal = properties.SelectModal;
+	}
+
+	if(properties.TableModal != null)
+	{
+		this.TableModal = properties.TableModal;
+	}
+
+	this.out = {};
+	this.execute = function(){
+		$("#AbstractModal").modal("show");
+		this.out = this;
+	};
+	this.output = function(){
+		return this.out;
+	}
+	
+}
+
+var one_object_property = function(properties)
+{
+	this.property = properties.property;
+	this.object = properties.object;
+	this.out = {};
+	this.execute = function()
+	{
+		this.out = this.object[this.property];
+	}
+	this.output = function(){
+		return this.out;
+	}
+}
+
+
+var select_in_modal = function(properties)
+{	
+	this.dataset = properties.dataset;
+	this.action = properties.action;
+	this.out = [];
+	this.execute = function()
+	{	
+		var myself = this;	
+		this.dataset.rows.forEach(function(row){
+			var inner_object = {};
+			inner_object["value"] = row[myself.dataset.primary_key];
+			inner_object["option"] = row[myself.dataset.default];
+			myself.out.push(inner_object);
+		});
+	}
+	this.output = function(){
+		return this.out;
+	} 
+} 
+
+var make_confirm = function(properties)
+{
+	this.description = "Metodo para realizar ventanas de alerta";	
+	this.text = properties.text;
+	this.out = {};
+	this.execute = function(){
+		this.out = confirm(this.text);
+	};
+	this.output = function(){
+		return this.out;
+	};
+
+}
+
+var get_session_data = function(properties)
+{
+	this.description = "conseguir datos de sesión";	
+	this.resource = properties.resource;
+	this.out = {};
+	var request = {};
+	var self = this;
+	this.execute = function(){		  
+	   request = self.resource.get_sessions();				
+	};
+	this.output = function(){
+		return new Promise(function(resolve, reject) {
+				 request.then(function(response) {
+				   resolve(response.data);
+				}, function(err) {
+				   err;
+				});		
+			});		
+	};	
+		
+} 
+
+
+make_confirm.prototype = new action();
+select_in_modal.prototype = new action();
+open_modal.prototype = new action();
+one_object_property.prototype = new action();
+get_session_data.prototype = new action();
+info_alert_from_request.prototype = new action();

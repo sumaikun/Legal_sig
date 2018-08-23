@@ -189,12 +189,14 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 		columnarray.forEach(function(element){
 				
 				var current_row = get_reference_model_name(object,element.model);
+				console.log(current_row);
 				element.columns.forEach(function(subelement){
 					var foreign_row = $filter('filter')($scope[element.model.capitalize()].columns,{Field:subelement})[0];
 					
 					new_column = {};
 					new_column.Field = subelement;
-					new_column.title = subelement+"("+element.model+")";					
+					new_column.title = subelement+"("+element.model+")";
+										
 					new_column.key_data = foreign_row.key_data;
 					new_column.foreign_column = foreign_row.key_data;
 					new_column.local_column = current_row.key_data; 
@@ -211,7 +213,7 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 
 	get_reference_model_name = function(object,model)
 	{		
-		var mul_cols = $filter('filter')(object.columns,{Key:"MUL"});
+		var mul_cols = $filter('filter')(object.columns,{Key:"MUL"});		
 		var searched_column = {};
 		mul_cols.forEach(function(element){			
 			if(element.key_data.REFERENCED_TABLE_NAME.capitalize() == model)
@@ -751,143 +753,7 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 }]);
 
 
-var info_alert_from_request = function(properties)
-{
-	this.ajaxmethod = properties.ajaxmethod;
-	this.async_process = "";
-	//console.log(this.ajaxmethod);
-	this.execute = function(){
-		self = this;
-		this.async_process = new Promise(function(resolve, reject) {
-			self.ajaxmethod.then(function(response)
-			{
-				self.message = response.data.message;
-				resolve(response.data.message);
-			});
-			self.ajaxmethod.catch(function(response) {
-			  alert("ocurrio un error");
-			  console.error('Gists error', response.status, response.data);
-			  reject("error");
-			});
-		});			
-	}
 
-	this.output = function(){
-		//console.log(this);
-		this.async_process.then(function(res){
-			alert(res);	
-		});
-		
-	}
-}
-
-
-
-var open_modal = function(properties)
-{	
-	this.size = properties.size;
-	this.title = properties.title;	
-	this.content = properties.content;
-	
-	if(properties.SelectModal != null)
-	{
-		this.SelectModal = properties.SelectModal;
-	}
-
-	if(properties.TableModal != null)
-	{
-		this.TableModal = properties.TableModal;
-	}
-
-	this.out = {};
-	this.execute = function(){
-		$("#AbstractModal").modal("show");
-		this.out = this;
-	};
-	this.output = function(){
-		return this.out;
-	}
-	
-}
-
-var one_object_property = function(properties)
-{
-	this.property = properties.property;
-	this.object = properties.object;
-	this.out = {};
-	this.execute = function()
-	{
-		this.out = this.object[this.property];
-	}
-	this.output = function(){
-		return this.out;
-	}
-}
-
-
-var select_in_modal = function(properties)
-{	
-	this.dataset = properties.dataset;
-	this.action = properties.action;
-	this.out = [];
-	this.execute = function()
-	{	
-		var myself = this;	
-		this.dataset.rows.forEach(function(row){
-			var inner_object = {};
-			inner_object["value"] = row[myself.dataset.primary_key];
-			inner_object["option"] = row[myself.dataset.default];
-			myself.out.push(inner_object);
-		});
-	}
-	this.output = function(){
-		return this.out;
-	} 
-} 
-
-var make_confirm = function(properties)
-{
-	this.description = "Metodo para realizar ventanas de alerta";	
-	this.text = properties.text;
-	this.out = {};
-	this.execute = function(){
-		this.out = confirm(this.text);
-	};
-	this.output = function(){
-		return this.out;
-	};
-
-}
-
-var get_session_data = function(properties)
-{
-	this.description = "conseguir datos de sesión";	
-	this.resource = properties.resource;
-	this.out = {};
-	var request = {};
-	var self = this;
-	this.execute = function(){		  
-	   request = self.resource.get_sessions();				
-	};
-	this.output = function(){
-		return new Promise(function(resolve, reject) {
-				 request.then(function(response) {
-				   resolve(response.data);
-				}, function(err) {
-				   err;
-				});		
-			});		
-	};	
-		
-} 
-
-
-make_confirm.prototype = new action();
-select_in_modal.prototype = new action();
-open_modal.prototype = new action();
-one_object_property.prototype = new action();
-get_session_data.prototype = new action();
-info_alert_from_request.prototype = new action();
 /*
 var ma = new action("make_confirm",{text:"¿Desea reemplazarlo con otro antes de eliminarlo?"});
 var om = new action("open_modal",{size:"modal-lg"});

@@ -1461,6 +1461,12 @@ class MatrizController extends Controller
         //print_r($requisito);
         //
    }
+
+
+   public function version4()
+   {
+        return view('Matriz.InterfazMatrizV4');
+   }
 }
 
 

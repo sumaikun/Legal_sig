@@ -1,0 +1,49 @@
+
+body
+{
+  background-color: white !important;
+}
+
+table{
+     border-collapse: collapse;
+    border-spacing: 0px;  
+    font-size:12px !important;
+    text-align: center;
+  }  
+
+  
+  th.filter
+  {
+    resize: horizontal;
+    overflow: hidden;   
+    margin: 0px;
+    padding: 0px;
+    border: 1px solid black;
+    background-color: gray;
+  }
+
+  th.filter:first-child
+  {
+    width:80px;
+    
+  }
+
+  tr td:first-child{
+    resize: vertical;
+  }
+
+  .resize_column {
+   
+  }
+
+  td div.resize_column {
+    resize: both;
+    overflow: hidden;  
+    margin: 0px;
+    padding: 0px;
+    display:block;
+    border: 0;
+    height: 20px;
+    width: 120px;
+  }
+  

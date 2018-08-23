@@ -42,6 +42,7 @@
     {{Html::script('js/Directives/loading.js')}}
     {{Html::script("js/Controllers/BrainController.js")}}
     {{Html::script("js/Controllers/CrudController.js")}}
+    {{Html::script("js/Controllers/MatrizController.js")}}
 
     <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" />
    <script src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
@@ -265,6 +266,12 @@ footer
                     <li>
                         <a href="{{route('matriz.matrices')}}"><i class='fa fa-gavel'></i>Matrices</a>
                     </li>
+
+                   @if(Auth::user()->rol_id == 1)    
+                    <li>
+                        <a href="{{route('matriz.version4')}}"><i class='fa fa-gavel'></i>Matrices version 4</a>
+                    </li>
+                  @endif
 
                   @if(Auth::user()->rol_id != 3) 
                     <li>

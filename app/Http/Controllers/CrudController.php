@@ -415,7 +415,7 @@ class CrudController extends Controller
     public function foreign_data($request)
     {
         $sql = "SELECT  TABLE_NAME,COLUMN_NAME,CONSTRAINT_NAME, REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
-        WHERE  COLUMN_NAME = '".$request->column."'";
+        WHERE  COLUMN_NAME = '".$request->column."' AND TABLE_NAME = '".$request->table."'";
         $f_data = DB::SELECT(DB::RAW($sql));
         $array = array("status"=>1,"sql"=>$sql,"f_data"=>$f_data);
         return response()->json($array);

@@ -77,11 +77,12 @@ app.factory('CrudServices',['$http','$q',function($http,$q){
 
 	}
 
-	CrudServices.foreign_data = function(column)
+	CrudServices.foreign_data = function(column,table)
 	{
 		var formData = new FormData();		
 		formData.append('Acc', 'foreign_data');
 		formData.append('column', column);
+		formData.append('table', table);
 		return $http({
 			url: global_url+"/angular/CrudController",
 			method: "POST",

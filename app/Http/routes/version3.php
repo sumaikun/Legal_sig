@@ -280,4 +280,8 @@ Route::post("angular/get_sessions","SystemController@user_session");
 
 Route::post("angular/derogar_info","SystemController@derogar_info");
 
+//--------------Versión 4 de matriz ------------------------------------------//
+
+Route::get("matriz/matrizlegal",array('as'=>'matriz.version4','uses'=>"MatrizController@version4"));
+
 
