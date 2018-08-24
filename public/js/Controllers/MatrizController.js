@@ -441,7 +441,7 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 
 	$scope.new_element = {};
 
-	$scope.Empresa = new table('Empresa',CrudServices,null,false);	
+	$scope.Empresa = new table('empresa',CrudServices,null,false);	
 
 	$scope.Tipo_matriz = new table('Tipo_matriz',CrudServices,null,false);
 
