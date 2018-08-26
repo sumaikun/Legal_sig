@@ -667,8 +667,7 @@ class ToolController extends Controller
                 $literal->save();
             }  
         }
-        
-        $norma = Normas::find($id);
+        $norma = Normas::where('id','=',$id)->first();
         $norma->id_Estados_vigencia = 2;
         $norma->save();
         return "Derogacion exitosa";

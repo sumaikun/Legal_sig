@@ -36,13 +36,13 @@
     {{Html::script('js/Directives/contenteditable.js')}}
 
     {{Html::script('js/Directives/timestampToDate.js')}}
-    {{Html::script("js/Services/BrainServices.js")}}
-    {{Html::script("js/Services/SystemServices.js")}}
-    {{Html::script("js/Services/CrudServices.js")}}
+    {{Html::script("js/Services/BrainServices.js?n=1")}}
+    {{Html::script("js/Services/SystemServices.js?n=1")}}
+    {{Html::script("js/Services/CrudServices.js?n=1")}}
     {{Html::script('js/Directives/loading.js')}}
-    {{Html::script("js/Controllers/BrainController.js")}}
-    {{Html::script("js/Controllers/CrudController.js")}}
-    {{Html::script("js/Controllers/MatrizController.js")}}
+    {{Html::script("js/Controllers/BrainController.js?n=1")}}
+    {{Html::script("js/Controllers/CrudController.js?n=1")}}
+    {{Html::script("js/Controllers/MatrizController.js?n=1")}}
 
     <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" />
    <script src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>

@@ -2,6 +2,8 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 
 	//$scope.centros_cabecera = [{"title":"id"},{"title":"nombre"},{"title":"opciones"}];
 
+
+
 	$(".loading").show();
 
 	var self = this;
@@ -61,7 +63,7 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 		  		promises = promises.concat(table_array.ready); 
 		  });
 
-		  console.log(promises);		  		  
+		  //console.log(promises);		  		  
 
 
 		  
@@ -116,7 +118,7 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 		
 		$scope.normas_view.ng_table_adapter_filter([{column:"id_Tipo_norma",typefilter:"select"},{column:"id_Emision",typefilter:"select"},{column:"id_Autoridad_emisora",typefilter:"select"},{column:"id_Estados_vigencia",typefilter:"select"}]);		
 
-		$scope.normas_view.crudcontrol([{title:'Editar',action:'edit',icon:'edit',role:[1,2]},{title:'eliminar',action:'delete_replace',icon:'trash',role:[1]},{title:'Derogar',action:'derogar',icon:'cube',role:[1,2],condition:{column:"id_Estados_vigencia",type:"equal",value:1}},{title:'Remover derogación',action:'desderogar',icon:'cube',role:[1,2],condition:{column:"id_Estados_vigencia",type:"equal",value:2}},{title:'Verificar Información de derogación',action:'verificacion_derogar',icon:'address-book',role:[1,2],condition:{column:"id_Estados_vigencia",type:"equal",value:2}}]);
+		$scope.normas_view.crudcontrol([{title:'Editar',action:'edit',icon:'edit',role:[1,2]},{title:'eliminar',action:'delete_replace',icon:'trash',role:[1]},{title:'Derogar',action:'derogar',icon:'cube',role:[1,2],condition:{column:"id_Estados_vigencia",type:"equal",value:1}},{title:'Remover derogación',action:'desderogar',icon:'unlink',role:[1,2],condition:{column:"id_Estados_vigencia",type:"equal",value:2}},{title:'Verificar Información de derogación',action:'verificacion_derogar',icon:'address-book',role:[1,2],condition:{column:"id_Estados_vigencia",type:"equal",value:2}}]);
 
 		$scope.normas_view.validation = [{type:'edit_or_create',columns:["numero","id_Tipo_norma","id_Emision"]}];
 		
@@ -290,7 +292,7 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 		if($("#table_selected").val() != null)
 		{			
 			$scope.current_view =  $scope[$("#table_selected").val()+"_view"];
-			console.log($scope.current_view.rows);
+			//console.log($scope.current_view.rows);
 			self.Ngcrudtable = new NgTableParams({},{ dataset: $scope.current_view.rows});
 			var reload = self.Ngcrudtable.reload();
 			reload.then(function(res){
@@ -509,7 +511,7 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 				{
 					row.id_Estados_vigencia = 1;
 					$scope.reload_ngtable("Ngcrudtable");
-					$("#AbstractModal").modal("hide");
+					alert("Derogación anulada");
 				}
 				else
 				{
@@ -654,8 +656,7 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 	}
 	
 	$scope.check_session_action = function(role)
-	{
-		
+	{		
 		if(role.contains($scope.Session.rol))
 		{
 			//console.log("true");
@@ -684,7 +685,7 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 
 	$scope.evaluate_column_conditions = function(condition,row)
 	{
-		//console.log(row);
+		console.log(condition);
 		if(condition == null)
 		{
 			return true;

@@ -364,12 +364,14 @@ class CrudController extends Controller
 
                 $result = DB::SELECT(DB::RAW($sql));
 
-
-                
-                if($result[0]->id != $request->data->id || count($result)>1)
+                if(isset($result[0]))
                 {
-                    $array = array("status"=>2,"message"=>"Existen valores similares en la base de datos por favor revise los datos enviados para evitar el ingreso de un registro repetido");
+                    if($result[0]->id != $request->data->id || count($result)>1)
+                    {
+                        $array = array("status"=>2,"message"=>"Existen valores similares en la base de datos por favor revise los datos enviados para evitar el ingreso de un registro repetido");
+                    }    
                 }
+                
 
                 $array = array("status"=>1);
                 break;

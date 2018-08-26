@@ -53,14 +53,14 @@
       </div>
 
       <div ng-show="col.Field == 'Opciones'">
-        <button  ng-repeat="action in col.actions" ng-show="action.not_render == null" title="{{action.title}}" ng-show="check_session_action(action.role) && evaluate_column_conditions(action.condition,row) " ng-click="execute_action(row,current_view,action)"><i class="fas fa-{{action.icon}}"></i></button>       
+        <button  ng-repeat="action in col.actions" ng-show="action.not_render == null" title="{{action.title}}" ng-if="check_session_action(action.role) && evaluate_column_conditions(action.condition,row) " ng-click="execute_action(row,current_view,action)"><i class="fas fa-{{action.icon}}"></i></button>       
       </div>                                      
     </td>
   
   </tr>
   <tr ng-if ="current_view != null ">    
     <td ng-repeat="col in current_view.columns"  ng-show="col.show == true" onclick="big_text_edit(this)">
-      <p class="editable_table_content"  ng-show="session_roles([1,2])" ng-model="new_element[col.Field]" contenteditable="{{column_behavior(col)}}" ></p>
+      <p  ng-if ="col.Key != 'MUL'"  class="editable_table_content"  ng-show="session_roles([1,2])" ng-model="new_element[col.Field]" contenteditable="{{column_behavior(col)}}" style="height: 45px; padding-top: 15px;"></p>
       <div ng-if ="col.Key == 'MUL' &&  session_roles([1,2])" >        
         <span  ng-show="render_option == false " class="text_table" >{{foreign_value(col.key_data,row[col.Field])}}</span>
         <select class="form-control" ng-model="new_element[col.Field]">
