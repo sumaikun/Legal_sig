@@ -347,7 +347,7 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 	
 	$scope.create = function(row,model)
 	{
-		//console.log(row);
+		console.log(row);
 		if(isEmpty(row))
 		{
 			return alert("No puede crear datos con valores vacios");
@@ -685,7 +685,7 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 
 	$scope.evaluate_column_conditions = function(condition,row)
 	{
-		console.log(condition);
+		//console.log(condition);
 		if(condition == null)
 		{
 			return true;

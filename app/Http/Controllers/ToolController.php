@@ -724,8 +724,24 @@ class ToolController extends Controller
     public function derogar_info($id)
     {
         $derogacion = Derogacion::where('id_derogado','=',$id)->where('tabla','=','normas')->first();
-        $norma = Normas::where('id','=',$derogacion->id_derogante)->first();
-        return $norma->tp_norma->nombre." ".$norma->numero." del año: ".$norma->emision->year." ".$norma->autoridad->nombre;
+        if($derogacion != null)
+        {
+            $norma = Normas::where('id','=',$derogacion->id_derogante)->first();
+            if($norma != null)
+            {
+                return $norma->tp_norma->nombre." ".$norma->numero." del año: ".$norma->emision->year." ".$norma->autoridad->nombre;    
+            }
+            else
+            {
+                return "No se puede verificar la información, ya que no se encuentra en el sistema.";
+            }
+                
+        }
+        else
+        {
+            return "No se puede verificar la información, ya que no se encuentra en el sistema.";
+        }
+        
     }
 
     public function derogar_info_2($id)
@@ -734,14 +750,28 @@ class ToolController extends Controller
         if($derogacion !=  null)
         {
             $articulo =  DB::Select(DB::RAW("select  tp.nombre as tp_norma , n.numero as norma, a.numero as articulo, es.nombre as vigencia, n.id as normaid, em.year as emision from Articulos as a INNER JOIN Normas as n on a.id_Normas = n.id INNER JOIN Tipo_norma as tp on n.id_Tipo_norma = tp.id INNER JOIN Estados_vigencia as es on a.id_Estados_vigencia = es.id INNER JOIN Emision as em on n.id_Emision = em.id  where a.id = ".$derogacion->id_derogante));
-            $articulo = $articulo[0];
-            return $articulo->tp_norma." ".$articulo->norma." del año: ".$articulo->emision." articulo ".$articulo->articulo;
+            if(isset($articulo[0]))
+            { 
+                $articulo = $articulo[0];
+                return $articulo->tp_norma." ".$articulo->norma." del año: ".$articulo->emision." articulo ".$articulo->articulo;
+            }
+            else
+            {
+                return "No se puede verificar la información, ya que no se encuentra en el sistema.";       
+            }
         }
         else{
             $articulo = Articulos::where('id','=',$id)->first();
             $derogacion = Derogacion::where('id_derogado','=',$articulo->id_Normas)->where('tabla','=','normas')->first();
             $norma = Normas::where('id','=',$derogacion->id_derogante)->first();
-            return $norma->tp_norma->nombre." ".$norma->numero." del año: ".$norma->emision->year." ".$norma->autoridad->nombre;
+            if($norma != null)
+            {
+                return $norma->tp_norma->nombre." ".$norma->numero." del año: ".$norma->emision->year." ".$norma->autoridad->nombre;
+            }
+            else
+            {
+                return "No se puede verificar la información, ya que no se encuentra en el sistema.";
+            }            
                 
         }
         
@@ -778,7 +808,12 @@ class ToolController extends Controller
     public function anular_derogar_norma($id)
     {
         $derogacion = Derogacion::where('id_derogado','=',$id)->where('tabla','=','normas')->first();
-        $derogacion ->delete();
+        
+        if($derogacion != null)
+        {
+            $derogacion ->delete();    
+        } 
+        
         $norma = Normas::where('id','=',$id)->first();
         $norma->id_Estados_vigencia = 1;
         $norma->save();

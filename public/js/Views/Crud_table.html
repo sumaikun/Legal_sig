@@ -60,7 +60,7 @@
   </tr>
   <tr ng-if ="current_view != null ">    
     <td ng-repeat="col in current_view.columns"  ng-show="col.show == true" onclick="big_text_edit(this)">
-      <p  ng-if ="col.Key != 'MUL'"  class="editable_table_content"  ng-show="session_roles([1,2])" ng-model="new_element[col.Field]" contenteditable="{{column_behavior(col)}}" style="height: 45px; padding-top: 15px;"></p>
+      <p  ng-show ="col.Key != 'MUL' && session_roles([1,2])"  class="editable_table_content" ng-model="new_element[col.Field]" contenteditable="{{column_behavior(col)}}" style="height: 45px; padding-top: 15px;"></p>
       <div ng-if ="col.Key == 'MUL' &&  session_roles([1,2])" >        
         <span  ng-show="render_option == false " class="text_table" >{{foreign_value(col.key_data,row[col.Field])}}</span>
         <select class="form-control" ng-model="new_element[col.Field]">
