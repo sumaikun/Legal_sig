@@ -42,7 +42,7 @@
    @endif 
 
 
-  @include('matriz.forms.modal')
+  @include('Matriz.forms.modal')
     @if(Auth::user()->rol_id==1||Auth::user()->rol_id==2)
 
 
