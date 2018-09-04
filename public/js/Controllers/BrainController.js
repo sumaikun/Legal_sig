@@ -6,18 +6,7 @@ app.controller('BrainController',['$scope','BrainServices','$compile','$window',
 	$scope.modal = {};
 	$scope.req = {};
 
-	$scope.test = function(){
-		var request = BrainServices.test();
-		request.then(function(response){			
-			//console.log(response);
-			$scope.years = response.data;
-			$("#myModaltest").modal('show');
-		});
-	}
 
-	$scope.edit_year = function(id){
-		alert("Voy a editar el id "+id);
-	}
 
 	$scope.verify_first_asistant_view = function(){
 		var request = BrainServices.verify_first_asistant_view();

@@ -1,3 +1,116 @@
+(function() {
+  "use strict";
+
+	app.filter("CrudFilter", CrudFilter);
+	 
+	  
+	  CrudFilter.$inject = ["$filter","$rootScope"];
+	  
+	    function CrudFilter($filter,$rootScope){
+
+	      return function(data, Criteria){       
+	        
+	        console.log(Criteria);
+
+	        if(Criteria.id_Normas)
+	      	{
+				var scope_normas = getfromScope("#crudscope","Normas");
+
+				var foreign_array = [];
+
+	      		scope_normas.rows.forEach(function(subelement){
+	      			
+	      			if(subelement.numero.toString().toUpperCase().startsWith(Criteria.id_Normas.toUpperCase()))
+	      			{
+	      				foreign_array.push(subelement.id);
+	      			}
+
+	      		});
+
+	      		var generate_array = [];
+
+	      		var scope_articulos = getfromScope("#crudscope","Articulos");
+
+	      		scope_articulos.rows.forEach(function(subelement){
+	      			
+	      			if(foreign_array.includes(subelement.id_Normas))
+	      			{
+	      				generate_array.push(subelement.id);
+	      			}
+
+	      		});
+
+	      		Criteria.id_Normas = generate_array;
+
+	      	}
+	      	
+	        var Exact_number_properties =  ["id_Factores","id_Categorias","id_Tipo_norma","id_Emision",
+	        "id_Autoridad_emisora","id_Estados_vigencia"];
+
+	        var Connections = [{criteriaindex:"id_Normas",itemindex:"id_Articulos"}];
+
+	        return (data || []).filter(function(item){        
+	          /*if(dynamic_conditions(Criteria,item,Connections,Exact_number_properties))
+	          {
+	             console.log(item);
+	          }*/
+	          return dynamic_conditions(Criteria,item,Connections,Exact_number_properties);
+	        	
+	      	  });
+	    	};
+
+	    	function dynamic_conditions(Criteria,item,Connections,Exact_number_properties)
+			{
+
+			    var validations = true;
+			    for(var property in Criteria){			     
+			      	
+			      var itemproperty = property;		      
+
+			      var check_connections = $filter('filter')(Connections,
+			      	function(value){
+	        				return value.criteriaindex === property}
+    				)[0];			      
+			      
+			      if(check_connections != null)
+			      {
+			      	 var itemproperty = check_connections.itemindex;	
+			      }
+			      
+			      if(typeof(Criteria[property]) == "object" )
+			      {      
+			        validations = Criteria[property].indexOf(item[itemproperty]) !== -1 ? true : false;
+			      }
+			      if(typeof(Criteria[property]) == "number" )
+			      {
+			      	if(item[itemproperty] != null){
+
+				      	if(Exact_number_properties.indexOf(property)!== -1 )
+				      	{
+				      		validations =  item[itemproperty] == Criteria[property] ? true : false; 
+				      	}
+				      	else
+				      	{				      						      		
+				      		validations = item[itemproperty].toString().startsWith(Criteria[property]) ? true : false;	
+				      	}			      			
+			      	}		                 
+			      } 
+			      if(typeof(Criteria[property]) == "string" )
+			      {		        
+			        if(item[itemproperty] != null){
+			        	validations = item[itemproperty].toUpperCase().startsWith(Criteria[property].toUpperCase()) ? true : false;
+			        }        
+			      }
+
+			      if(!validations){return false;}      
+			    }
+
+			    return true; 
+			}
+		}
+		
+})();
+
 app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServices','$window','$compile','$filter','NgTableParams',function($scope,$timeout,CrudServices,SystemServices,$window,$compile,$filter,NgTableParams){
 
 	//$scope.centros_cabecera = [{"title":"id"},{"title":"nombre"},{"title":"opciones"}];
@@ -256,6 +369,10 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 	  			var foreign_object = $scope[element.key_data.REFERENCED_TABLE_NAME.capitalize()];
 	  			element.title = foreign_object.default+" ("+foreign_object.table+")";
 		  		
+		  		var filter_obj = {};
+		  		var filter_type = "text";
+		  		filter_obj[element.field] = filter_type; 	 	  
+		 		element.filter= filter_obj;
 		  }
 		  else
 		  {
@@ -293,7 +410,10 @@ app.controller('CrudController',['$scope','$timeout','CrudServices','SystemServi
 		{			
 			$scope.current_view =  $scope[$("#table_selected").val()+"_view"];
 			//console.log($scope.current_view.rows);
-			self.Ngcrudtable = new NgTableParams({},{ dataset: $scope.current_view.rows});
+			self.Ngcrudtable = new NgTableParams({},{
+				filterOptions: {filterFilterName: "CrudFilter"}, 
+				dataset: $scope.current_view.rows
+			});
 			var reload = self.Ngcrudtable.reload();
 			reload.then(function(res){
 				console.log(self.Ngcrudtable);

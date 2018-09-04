@@ -33,7 +33,7 @@
     <h2>Parámetros</h2>
     <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
       <div ng-app="Appi">
-        <div ng-controller="CrudController as CC">
+        <div id="crudscope" ng-controller="CrudController as CC">
           <!--
           <button ng-click="Test_callbacks()">Test</button>
           -->
