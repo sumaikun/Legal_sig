@@ -61,6 +61,25 @@ app.factory('CrudServices',['$http','$q',function($http,$q){
 
 	}
 
+
+	CrudServices.getBy = function(data)
+	{
+		var formData = new FormData();		
+		formData.append('Acc', 'getBy');
+		formData.append('table', data.table);
+		formData.append('index', data.index);
+		formData.append('value', data.value);
+		return $http({
+			url: global_url+"/angular/CrudController",
+			method: "POST",
+			data: formData,
+			headers: { 
+			  'Content-Type': undefined
+			}
+	   });	   
+
+	}
+
 	CrudServices.getMETA_COLUMNS = function(data)
 	{
 		var formData = new FormData();		

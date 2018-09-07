@@ -12,6 +12,15 @@
 	        
 	        console.log(Criteria);
 
+	        if(Criteria.id_empresa)
+	      	{
+	      		accessScope('#matrizscope', function (scope) {
+				    
+				  scope.enterprise_selected = Criteria.id_empresa;
+				         
+			    });
+	      	}
+
 	      	if(Criteria.id_Categorias)
 	      	{
 	      		
@@ -415,7 +424,7 @@
 
 app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemServices','$window','$compile','$filter','NgTableParams',function($scope,$timeout,CrudServices,SystemServices,$window,$compile,$filter,NgTableParams){
 
-
+	$scope.enterprise_selected = "";
 
 	$(".loading").show();
 
@@ -441,6 +450,8 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 
 	$scope.new_element = {};
 
+	$scope.Requisitos = new table('Requisitos',CrudServices,null,false);
+
 	$scope.Empresa = new table('empresa',CrudServices,null,false);	
 
 	$scope.Tipo_matriz = new table('Tipo_matriz',CrudServices,null,false);
@@ -465,7 +476,7 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 
 	$scope.Literales = new table('Literales',CrudServices,null,false);
 
-	$scope.Requisitos = new table('Requisitos',CrudServices,null,false);	
+	$scope.Extra_Schlum = new table('Extra_Schlum',CrudServices,null,false);	
 
 	(function() {
 
@@ -492,7 +503,49 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 
 	}());
 
+	 $scope.$watch("enterprise_selected",function(newValue,oldValue) {
+     	
+     	if(newValue == 3)
+     	{
+     		//alert("trigger");
+     		self.headers.push({Field:"Requisito_proceso",title:"Requisitos en proceso"});
+     		self.headers.push({Field:"Barranca",title:"Barranca"});
+     		self.headers.push({Field:"Cota",title:"Cota"});
+     		self.headers.push({Field:"Guafilla",title:"Guafilla"});
+     		self.headers.push({Field:"Villavicencio",title:"Villavicencio"});
+     		self.headers.push({Field:"Neiva",title:"Neiva"});
+     		self.headers.push({Field:"Oficinas",title:"Oficinas"});
+     		self.headers.push({Field:"Likelihood",title:"Likelihood"});
+     		self.headers.push({Field:"Severity",title:"Severity"});
+     		self.headers.push({Field:"Likelihood_X_Severity",title:"Likelihood X Severity"});
+     		self.headers.push({Field:"Risk_Level",title:"Risk Level"}); 
 
+     		//console.log($scope.requisitos_view);
+
+     		self.Ngtable.reload();
+
+
+     	}
+
+     	if((oldValue != newValue) & oldValue == 3)
+     	{
+     		array = ["Requisito_proceso","Barranca","Cota",
+     		"Guafilla","Villavicencio","Neiva","Oficinas",
+     		"Likelihood","Severity","Likelihood_X_Severity","Risk_Level"];
+     		
+     		array.forEach(function(value){
+     			row = $filter('filter')(self.headers,{Field:value})[0];
+     			index = self.headers.indexOf(row);
+     			self.headers.splice(index, 1);	
+     		});
+
+
+     		self.Ngtable.reload();
+
+     		
+     	}
+	   
+    });
 	
 
 	var ready_to_make_views = function(){
@@ -555,6 +608,7 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 
 		$scope.categorias_select = [];
 		
+		//console.log($scope.Requisitos);
 
 		$scope.requisitos_view = $scope.Requisitos;  
 
@@ -583,7 +637,7 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 			{Field:"id_Normas",title:"Norma",filter:{id_Normas:"text"}},{Field:"id_Emision",title:"Fecha de emisión",filter:{id_Emision:"number"}},{Field:"id_Autoridad_emisora",title:"Autoridad emisora",filter:{id_Autoridad_emisora:"text"}},{Field:"id_Articulos",title:"Articulo",filter:{id_Articulos:"text"}},{Field:"id_Estados_vigencia",title:"Estado",filter:{id_Estados_vigencia:"select"},filterData:self.estados_vigencia_select},
 			{Field:"reqlegal",title:"Requisito",filter:{reqlegal:"text"}},{Field:"esperada",title:"Evidencia esperada",filter:{esperada:"text"}},{Field:"responsable",title:"responsable",filter:{responsable:"text"}},
 			{Field:"area",title:"Area",filter:{area:"text"}},{Field:"id_clase_norma",title:"Clase",filter:{id_clase_norma:"select"},filterData:self.clase_norma_select},{Field:"nrelacionadas",title:"Normas relacionadas",filter:{nrelacionadas:"text"}}
-			];
+		];
 
 		//console.log($scope.requisitos_view);		
 

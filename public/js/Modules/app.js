@@ -66,7 +66,7 @@ app.config(['$httpProvider', function($httpProvider) {
 }]);
 
 
-function table(table,resource,table_headers,safe_index=false)
+function table(table,resource,table_headers,safe_index=false,get_by="All")
 {
 	var resulset = null;
 	
@@ -108,8 +108,10 @@ table.prototype.init = function()
 
 		var asyncprocess = new Promise( (resolve, reject) => {
 
-			var request = self.resource.getAll(self);		
-
+			if(get_by == "All")
+			{ 		
+				var request = self.resource.getAll(self);		
+ 			}
 
 			request.then(function(response){
 				 self.rows = response.data.rows;
