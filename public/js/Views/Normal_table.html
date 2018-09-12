@@ -13,7 +13,7 @@
 
       <div class="resize_column">
 
-        <p ng-show="col.Field != 'Opciones' && col.Type != 'timestamp' && col.Key != 'MUL' && col.foreign_column == null && col.KEY !=  'extra_column'" >
+        <p ng-show="col.Field != 'Opciones' && col.Type != 'timestamp' && col.Key != 'MUL' && col.foreign_column == null && col.KEY !=  'extra_column' && col.KEY !=  'json_columns' " >
           {{::row[col.Field]}}
         </p>
 
@@ -26,7 +26,12 @@
 
        <span ng-if="col.KEY ==  'extra_column' " ng-init="data = extra_column(MC.columns,col,row)">
           {{data.get_row[col.get]}}
-       </span>       
+       </span>
+
+        <div ng-if="col.KEY == 'json_columns'">
+          <p   ng-init="row[col.Field]=''" ng-model="row[col.Field]" contenteditable="{{col.editable}}" ng-blur="save_property_to_db(row[col.Field],col.Field,row.id)" >{{get_from_json_data("Requisitos",col.Field,row.id)}}</p>       
+        </div>
+        
 
       </div>
     </td>             

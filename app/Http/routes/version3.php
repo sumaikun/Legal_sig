@@ -280,6 +280,8 @@ Route::post("angular/get_sessions","SystemController@user_session");
 
 Route::post("angular/derogar_info","SystemController@derogar_info");
 
+Route::post("angular/save_property_to_db","SystemController@save_property_to_db");
+
 //--------------Versión 4 de matriz ------------------------------------------//
 
 Route::get("matriz/matrizlegal",array('as'=>'matriz.version4','uses'=>"MatrizController@version4"));

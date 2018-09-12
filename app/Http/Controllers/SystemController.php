@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 
 use Sig\Http\Requests;
 
+use Sig\Models\Json_extra;
+
 use Sig\Http\Controllers\ToolController; 
 
 use DB;
@@ -190,5 +192,48 @@ class SystemController extends Controller
         $array = array("status"=>1,"message"=>$process);
         
         return response()->json($array);   
+    }
+
+
+    public function save_property_to_db(Request $request)
+    {
+        $previous = Json_extra::where("related_table","=",$request->related_table)->where("related_id","=",$request->related_id)->first();
+
+
+        if($previous == null)
+        {
+            $json_data = json_encode(array($request->field=>$request->data_to_save));
+
+            $extra = new Json_extra();
+
+            $extra->related_id = $request->related_id;
+            $extra->related_table = $request->related_table;
+            $extra->json_data = $json_data;
+            $extra->desc = $request->desc;
+            $extra->save(); 
+            
+        }
+        else
+        {
+            $previous_object = json_decode($previous->json_data);
+            if(property_exists ( $previous_object , $request->field))
+            {
+                $property = $request->field;
+                $previous_object->$property = $request->data_to_save;
+            }
+            else
+            {               
+                $field = $request->field;
+                $previous_object->$field = $request->data_to_save;
+            }
+
+            $json_data = json_encode($previous_object);
+
+            $previous->json_data = $json_data;
+
+            $previous->save();            
+        }
+
+        return response()->json(array("status"=>"OK"));
     }
 }

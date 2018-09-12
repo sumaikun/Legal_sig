@@ -22,6 +22,7 @@
     {!!Html::style('css/metisMenu.min.css')!!}
     {!!Html::style('css/sb-admin-2.css')!!}
     {!!Html::style('css/font-awesome.min.css')!!}
+    {!!Html::style('css/overlay.css')!!}
          {!!Html::script('js/jquery.min.js')!!}
       <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" />
       <script src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>

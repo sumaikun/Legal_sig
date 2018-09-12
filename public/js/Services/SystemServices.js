@@ -29,7 +29,10 @@ app.factory('SystemServices',['$http','$q',function($http,$q){
         return $http.post(global_url+"/angular/derogar_info",data);   
     }
 
-
+    SystemServices.save_property_to_db = function(data)
+    {
+        return $http.post(global_url+"/angular/save_property_to_db",data);   
+    }    
 
 	
 	return SystemServices;	

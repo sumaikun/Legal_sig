@@ -426,6 +426,8 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 
 	$scope.enterprise_selected = "";
 
+	var request_alredy_done = [];
+
 	$(".loading").show();
 
 	var self = this;
@@ -476,13 +478,14 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 
 	$scope.Literales = new table('Literales',CrudServices,null,false);
 
-	$scope.Extra_Schlum = new table('Extra_Schlum',CrudServices,null,false);	
+	$scope.Extra_json_data = new table('Extra_json_data',CrudServices,null,false);
+		
 
 	(function() {
 
 		  var tables_array = [$scope.Tipo_matriz,$scope.Clase_norma,$scope.Factores,$scope.Categorias,$scope.Normas,$scope.Articulos,
 		  $scope.Literales,$scope.Tipo_norma,$scope.Autoridad_emisora,$scope.Emision,$scope.Estados_vigencia
-		  ,$scope.Requisitos];
+		  ,$scope.Requisitos,$scope.Extra_json_data];
 
 		  
 
@@ -508,17 +511,17 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
      	if(newValue == 3)
      	{
      		//alert("trigger");
-     		self.headers.push({Field:"Requisito_proceso",title:"Requisitos en proceso"});
-     		self.headers.push({Field:"Barranca",title:"Barranca"});
-     		self.headers.push({Field:"Cota",title:"Cota"});
-     		self.headers.push({Field:"Guafilla",title:"Guafilla"});
-     		self.headers.push({Field:"Villavicencio",title:"Villavicencio"});
-     		self.headers.push({Field:"Neiva",title:"Neiva"});
-     		self.headers.push({Field:"Oficinas",title:"Oficinas"});
-     		self.headers.push({Field:"Likelihood",title:"Likelihood"});
-     		self.headers.push({Field:"Severity",title:"Severity"});
-     		self.headers.push({Field:"Likelihood_X_Severity",title:"Likelihood X Severity"});
-     		self.headers.push({Field:"Risk_Level",title:"Risk Level"}); 
+     		self.headers.push({Field:"Requisito_proceso",title:"Requisitos en proceso",editable:true,KEY:"json_columns"});
+     		self.headers.push({Field:"Barranca",title:"Barranca",editable:true,KEY:"json_columns"});
+     		self.headers.push({Field:"Cota",title:"Cota",editable:true,KEY:"json_columns"});
+     		self.headers.push({Field:"Guafilla",title:"Guafilla",editable:true,KEY:"json_columns"});
+     		self.headers.push({Field:"Villavicencio",title:"Villavicencio",editable:true,KEY:"json_columns"});
+     		self.headers.push({Field:"Neiva",title:"Neiva",editable:true,KEY:"json_columns"});
+     		self.headers.push({Field:"Oficinas",title:"Oficinas",editable:true,KEY:"json_columns"});
+     		self.headers.push({Field:"Likelihood",title:"Likelihood",editable:true,KEY:"json_columns"});
+     		self.headers.push({Field:"Severity",title:"Severity",editable:true,KEY:"json_columns"});
+     		self.headers.push({Field:"Likelihood_X_Severity",title:"Likelihood X Severity",editable:true,KEY:"json_columns"});
+     		self.headers.push({Field:"Risk_Level",title:"Risk Level",editable:true,KEY:"json_columns"}); 
 
      		//console.log($scope.requisitos_view);
 
@@ -713,9 +716,17 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 	}
 
 	$scope.get_column_by_reference = function(header){
+
 		var column = $filter('filter')(self.columns,{Field:header.Field})[0];
-		//console.log(column);
+		
+		if(column == null)
+		{
+			var column = $filter('filter')(self.headers,{Field:header.Field})[0];
+			// Si no esta en las columnas de la base de datos, entonces va a estar en los headers ya que estas columnas fuerón posteriormente creadas como objetos json		
+		}		
+
 		return column;
+		
 	}	
 	
 	table.prototype.ng_table_extra_foreigns_columns = function(columnarray)
@@ -891,7 +902,59 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 
 
 
+	$scope.save_property_to_db = function(data_to_save,field,related_id)
+	{
+		//$scope.loading = true;
+		//
 
+		var data_to_request = {data_to_save:data_to_save,field:field,related_id:related_id};
+
+		//console.log(request_alredy_done.indexOf(data_to_request));
+
+		//console.log(request_alredy_done);
+
+		if($filter('filter')(request_alredy_done,data_to_request)[0] == null && data_to_save.length > 0)
+		{			
+			request_alredy_done.push(data_to_request);		
+
+			
+			$(".loading").show();
+			var request = SystemServices.save_property_to_db({field:field,data_to_save:data_to_save,related_table:"Requisitos",related_id:related_id});
+			request.then(function(response){
+				
+				$(".loading").hide();
+
+				if(response.data.status!=null)
+				{
+					//alert("Datos guardados");
+				}
+				else
+				{
+					alert("Sucedio un error");
+				}
+			});	
+			
+		}		
+	}
+
+	$scope.get_from_json_data = function(related_table,field,related_id)
+	{
+		var data_filter = {related_table:related_table,related_id:related_id};
+		row = $filter('filter')($scope.Extra_json_data.rows,data_filter)[0];
+		//console.log(row);
+		if(row != null)
+		{
+			var json_data = JSON.parse(row.json_data);
+			//console.log(json_data);
+			//console.log(field);
+			return json_data[field];
+		}
+		else
+		{
+			return "";
+		}
+	}
+	
 		
 
 }]);

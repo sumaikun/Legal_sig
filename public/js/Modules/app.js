@@ -52,13 +52,15 @@ function getfromScope(node,key)
 
 app.factory('sessionInjector',[function() {  
     var sessionInjector = {
-        request: function(config) {            
+        request: function(config) {
+        	//console.log(config);            
             config.headers['x-session-token'] = $('meta[name="csrf-token"]').attr('content');            
             return config;
         }
     };
     return sessionInjector;
 }]);
+
 
 
 app.config(['$httpProvider', function($httpProvider) {  
@@ -88,7 +90,7 @@ function table(table,resource,table_headers,safe_index=false,get_by="All")
 
 	//this.loaded = [];
 	
-	this.ready = this.init();
+	this.ready = this.init(get_by);
 	
 	this.test = function()
 	{
@@ -101,8 +103,9 @@ function table(table,resource,table_headers,safe_index=false,get_by="All")
 	
 }
 
-table.prototype.init = function()
+table.prototype.init = function(get_by)
 {
+	//El get by es para poder filtrar la empresa por usuario
 	
 	var self = this;
 
@@ -112,6 +115,11 @@ table.prototype.init = function()
 			{ 		
 				var request = self.resource.getAll(self);		
  			}
+ 			else
+			{
+				//console.log("get_by");
+				var request = self.resource.getBy({get:get_by,table:self.table});	
+			}
 
 			request.then(function(response){
 				 self.rows = response.data.rows;

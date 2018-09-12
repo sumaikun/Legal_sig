@@ -61,6 +61,15 @@ app.factory('CrudServices',['$http','$q',function($http,$q){
 
 	}
 
+	SystemService.getBy = function(get)
+	{
+		data = {};
+		data.properties = get.get;
+		data.Acc = 'getBy';
+		data.table = get.table;
+		return $http.post(global_url+"/angular/CrudController",data)
+	}
+
 
 	CrudServices.getBy = function(data)
 	{
