@@ -29,7 +29,7 @@
        </span>
 
         <div ng-if="col.KEY == 'json_columns'">
-          <p   ng-init="row[col.Field]=''" ng-model="row[col.Field]" contenteditable="{{col.editable}}" ng-blur="save_property_to_db(row[col.Field],col.Field,row.id)" >{{get_from_json_data("Requisitos",col.Field,row.id)}}</p>       
+          <p   ng-init="row[col.Field]=''" ng-model="row[col.Field]" contenteditable="{{col.editable && session_roles([1,2])}}" ng-blur="save_property_to_db(row[col.Field],col.Field,row.id)" >{{get_from_json_data("Requisitos",col.Field,row.id)}}</p>       
         </div>
         
 

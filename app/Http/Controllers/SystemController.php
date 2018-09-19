@@ -33,6 +33,9 @@ class SystemController extends Controller
             $user_properties->iduser = Auth::user()->idusuario;
             $user_properties->rol = Auth::user()->rol_id;
             $user_properties->nombre = Auth::user()->nombre;
+            $user_properties->empresas = Auth::user()->EmpresasPermiso;
+
+            $user_properties->empresas = explode(",", $user_properties->empresas);
 
             $array = array("status"=>1,"message"=>"Conseguida variables de sesión","user_properties"=>$user_properties); 
        }
@@ -209,7 +212,7 @@ class SystemController extends Controller
             $extra->related_id = $request->related_id;
             $extra->related_table = $request->related_table;
             $extra->json_data = $json_data;
-            $extra->desc = $request->desc;
+            $extra->description = $request->description;
             $extra->save(); 
             
         }

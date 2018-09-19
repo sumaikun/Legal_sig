@@ -441,7 +441,73 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 	async function f1() {
   		var x = await gsd.output(10);
   		$scope.Session = x.user_properties;
+  		
   		console.log($scope.Session);
+
+  		if($scope.Session.rol == 1)
+		{
+			$scope.Requisitos = new table('Requisitos',CrudServices,null,false);	
+			$scope.Empresa = new table('empresa',CrudServices,null,false);
+		}
+		else
+		{
+			$scope.Requisitos = new table('Requisitos',CrudServices,null,false,{id_empresa:$scope.Session.empresas});	
+			$scope.Empresa = new table('empresa',CrudServices,null,false,{idempresa:$scope.Session.empresas});
+		}			
+
+		$scope.Tipo_matriz = new table('Tipo_matriz',CrudServices,null,false);
+
+		$scope.Clase_norma = new table('Clase_norma',CrudServices,null,false);		
+
+		$scope.Factores = new table('Factores',CrudServices,null,false);	
+
+		$scope.Categorias = new table('Categorias',CrudServices,null,false);	
+
+		$scope.Tipo_norma = new table('Tipo_norma',CrudServices,null,false);
+
+		$scope.Autoridad_emisora = new table('Autoridad_emisora',CrudServices,null,false);
+
+		$scope.Emision = new table('Emision',CrudServices,null,false);
+
+		$scope.Estados_vigencia = new table('Estados_vigencia',CrudServices,null,false);
+
+		$scope.Normas = new table('Normas',CrudServices,null,false);	
+
+		$scope.Articulos = new table('Articulos',CrudServices,null,false);	
+
+		$scope.Literales = new table('Literales',CrudServices,null,false);
+
+		$scope.Extra_json_data = new table('Extra_json_data',CrudServices,null,false);
+		
+
+		
+
+
+		(function() {
+
+			  var tables_array = [$scope.Tipo_matriz,$scope.Clase_norma,$scope.Factores,$scope.Categorias,$scope.Normas,$scope.Articulos,
+			  $scope.Literales,$scope.Tipo_norma,$scope.Autoridad_emisora,$scope.Emision,$scope.Estados_vigencia
+			  ,$scope.Requisitos,$scope.Extra_json_data];
+
+			  
+
+			  var promises = [];
+
+			  tables_array.forEach(function(table_array){
+			  		promises = promises.concat(table_array.ready); 
+			  });
+
+			  //console.log(promises);		  		  
+
+
+			  
+			  Promise.all(promises).then(values => {			  
+				  
+				  ready_to_make_views();
+			  });
+
+		}());
+
 	}
 
 	f1();
@@ -451,61 +517,9 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 	$scope.table_selected = {};
 
 	$scope.new_element = {};
+	
 
-	$scope.Requisitos = new table('Requisitos',CrudServices,null,false);
-
-	$scope.Empresa = new table('empresa',CrudServices,null,false);	
-
-	$scope.Tipo_matriz = new table('Tipo_matriz',CrudServices,null,false);
-
-	$scope.Clase_norma = new table('Clase_norma',CrudServices,null,false);		
-
-	$scope.Factores = new table('Factores',CrudServices,null,false);	
-
-	$scope.Categorias = new table('Categorias',CrudServices,null,false);	
-
-	$scope.Tipo_norma = new table('Tipo_norma',CrudServices,null,false);
-
-	$scope.Autoridad_emisora = new table('Autoridad_emisora',CrudServices,null,false);
-
-	$scope.Emision = new table('Emision',CrudServices,null,false);
-
-	$scope.Estados_vigencia = new table('Estados_vigencia',CrudServices,null,false);
-
-	$scope.Normas = new table('Normas',CrudServices,null,false);	
-
-	$scope.Articulos = new table('Articulos',CrudServices,null,false);	
-
-	$scope.Literales = new table('Literales',CrudServices,null,false);
-
-	$scope.Extra_json_data = new table('Extra_json_data',CrudServices,null,false);
-		
-
-	(function() {
-
-		  var tables_array = [$scope.Tipo_matriz,$scope.Clase_norma,$scope.Factores,$scope.Categorias,$scope.Normas,$scope.Articulos,
-		  $scope.Literales,$scope.Tipo_norma,$scope.Autoridad_emisora,$scope.Emision,$scope.Estados_vigencia
-		  ,$scope.Requisitos,$scope.Extra_json_data];
-
-		  
-
-		  var promises = [];
-
-		  tables_array.forEach(function(table_array){
-		  		promises = promises.concat(table_array.ready); 
-		  });
-
-		  //console.log(promises);		  		  
-
-
-		  
-		  Promise.all(promises).then(values => {			  
-			  
-			  ready_to_make_views();
-		  });
-
-	}());
-
+	
 	 $scope.$watch("enterprise_selected",function(newValue,oldValue) {
      	
      	if(newValue == 3)
@@ -919,7 +933,7 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 
 			
 			$(".loading").show();
-			var request = SystemServices.save_property_to_db({field:field,data_to_save:data_to_save,related_table:"Requisitos",related_id:related_id});
+			var request = SystemServices.save_property_to_db({field:field,data_to_save:data_to_save,related_table:"Requisitos",related_id:related_id,description:"Columna Extra Schlumb"});
 			request.then(function(response){
 				
 				$(".loading").hide();

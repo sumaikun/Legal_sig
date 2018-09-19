@@ -267,11 +267,11 @@ footer
                         <a href="{{route('matriz.matrices')}}"><i class='fa fa-gavel'></i>Matrices</a>
                     </li>
 
-                   @if(Auth::user()->rol_id != 3)    
+                      
                     <li>
                         <a href="{{route('matriz.version4')}}"><i class='fa fa-gavel'></i>Matrices version 4</a>
                     </li>
-                  @endif
+                  
 
                   @if(Auth::user()->rol_id != 3) 
                     <li>

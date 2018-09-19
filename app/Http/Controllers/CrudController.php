@@ -57,8 +57,15 @@ class CrudController extends Controller
             {
                 $request = json_decode($request_body);  
                 
-                
-                switch ($_SERVER['REQUEST_METHOD']) {
+                if($request->Acc)
+                {
+                    $Acc = $request->Acc;
+                    $response = $this->$Acc($request);
+                    return $response;    
+                }
+                else
+                {
+                    switch ($_SERVER['REQUEST_METHOD']) {
                     case "POST":
                         $response = $this->create($request);
                         break;
@@ -69,9 +76,12 @@ class CrudController extends Controller
                         //echo "here";
                         $response = $this->delete($request);
                         break;
-                }       
+                    }       
+                    
+                    return $response;    
+                }
+                 
                 
-                return $response;
             }       
             
 
@@ -93,6 +103,62 @@ class CrudController extends Controller
         $rows = DB::SELECT(DB::RAW($sql));        
         $array = array("status"=>1,"rows"=>$rows,"sql"=>$sql);
         return response()->json($array);
+    }
+
+    public function getBy($request)
+    {
+        $sql = "Select * from ".$request->table." where ";
+
+        $properties = $request->properties;
+
+        $i = 0;
+        foreach($properties as $key => $value)
+        {
+            $i++;
+            if(count($properties) == $i)
+            {
+                if(is_array($value))
+                {
+                    $inner =  '(';
+                    foreach ($value as $val) {
+                        $inner .= "'".$val."',";
+                    }
+                    $inner = substr($inner, 0,-1);
+                    $inner .=  ')';
+                    $sql .=  $key." in ".$inner;      
+                }
+                else
+                {
+                    $sql .=  $key." = '".$value."'";    
+                }
+                    
+            }
+            else
+            {
+                if(is_array($value))
+                {
+                    $inner =  '(';
+                    foreach ($value as $val) {
+                        $inner .= "'".$val."',";
+                    }
+                    $inner = substr($inner, 0,-1);
+                    $inner .=  ')';
+                    $sql .=  $key." in ".$inner;
+                }
+                else
+                {
+                    $sql .=  $key." = '".$value."' and ";    
+                }
+
+            }
+        }
+
+        $rows = DB::SELECT(DB::RAW($sql));
+        
+        $array = array("status"=>1,"rows"=>$rows,"sql"=>$sql);
+
+        return response()->json($array);
+        
     }
 
 
