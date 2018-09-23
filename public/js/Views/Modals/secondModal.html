@@ -1,0 +1,114 @@
+<!-- Modal -->
+<div id="AbstractSecondModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content {{secondmodal.size}}">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">{{secondmodal.title}}</h4>
+      </div>
+      <div class="modal-body">
+
+        <div ng-if="secondmodal.content == 'table_in_modal_with_headers' " class="table-responsive">
+          <table id="dynamicTable" ng-table-dynamic=" ModalSecondNgtable with secondmodal.TableModal.headers" class=" table table-responsive table-bordered" show-filter='true'>
+            <tr ng-repeat="row in $data" ng-if="view_last_condition($last,row,secondmodal.only_last_row)">    
+               <td ng-repeat="header in $columns" ng-init="col = get_column_by_reference(header,secondmodal.model)" filter="col.filter">
+                <div class="resize_column" >
+                    <p ng-show="col.Field != 'Opciones' && col.Type != 'timestamp' && col.Key != 'MUL' && col.foreign_column == null && col.KEY !=  'extra_column' && col.KEY !=  'json_columns' " >
+                      {{::row[col.Field]}}
+                    </p>
+
+                   <span  ng-if ="col.Key == 'MUL'  " class="text_table" >{{foreign_value(col.key_data,row[col.Field])}}</span>
+
+                   
+                   <span ng-if="col.foreign_column != null">
+                      {{foreign_value(col.foreign_column,row[col.Field])}}
+                   </span>
+
+                   <span ng-if="col.KEY ==  'extra_column' " ng-init="data = extra_column(MC.columns,col,row)">
+                      {{data.get_row[col.get]}}
+                   </span>
+                    
+                    <div ng-show="col.Field == 'Opciones'">
+
+                      <button  ng-repeat="action in col.actions" ng-show="action.not_render == null" title="{{action.title}}" ng-if="check_session_action(action.role) && evaluate_column_conditions(action.condition,row,secondmodal.model) " ng-click="execute_action(row,current_view,action)"><i class="fas fa-{{action.icon}}"></i></button>       
+                      
+                    </div> 
+
+               </div>
+              </td>             
+            </tr>             
+          </table>
+          <br>
+          <div ng-if="secondmodal.TableModal.action != null" class="form-group">
+            <button  ng-click="simple_modal_action(secondmodal.TableModal.action,secondmodal.TableModal.callback)" class="btn btn-primary">{{secondmodal.TableModal.buttonname}}</button>
+          </div>
+        </div>
+
+        <div ng-if="secondmodal.content == 'new_comment_form' " class="table-responsive">         
+         <style>
+          .fix_headerborder{
+            border-bottom: 2px solid black !important;
+          }
+         </style>              
+            <div class="row">  
+              <div class="col-lg-12">                        
+                  <div class = "form-group">
+                    <label>Titulo</label>
+                    <input type="text"  ng-model="new_comment.titulo" name="titulo" class="form-control">
+                  </div>
+                  <div class = "form-group">
+                    <label>Comentario</label>
+                    <textarea name="comentario" ng-model="new_comment.comentario"  style="height: 100px;" class="form-control"></textarea>  
+                  </div>
+                  <div class = "form-group">
+                    <label>Anexar archivo (no obligatorio)</label>
+                    <input type="file" demo-file-model="new_comment.archivo"  name="archivo">  
+                  </div>
+              </div>
+            </div>         
+        </div>
+
+        <div ng-if="secondmodal.content == 'evaluation_form' " class="table-responsive">
+
+          <label>Fecha de evaluación</label>
+
+          <input type="date" name="fecha" id="fechaini"  class="form-control">
+          
+
+           <div class="form-group">
+                  <label for="Evidencia de Cumplimiento">Evidencia De Cumplimiento</label>
+                  <textarea id="evidenciacump" class="form-control" placeholder="Ingrese la evidencia de cumplimiento" style="max-height: 100px !important;" maxlength="2500" required="" minlength="30" name="evidenciacump" cols="50" rows="10"></textarea>
+           </div>
+
+              <div class="form-group">
+                <span class="title">Calificación</span>
+               
+
+                  
+                  <label for="0">0</label>
+                  <input checked="checked" name="calificacion" type="radio" value="0">
+                  <label for="100">100</label>
+                  <input name="calificacion" type="radio" value="100">
+
+                  
+                
+              </div>  
+              <div class="form-group">
+                  <label for="Fecha Proxima evaluación">Fecha Proxima Evaluación</label>
+                  <input id="fechaprox" class="form-control" required="" name="fechaprox" type="date">
+              </div>
+
+        </div>  
+
+
+      </div>
+      <div class="modal-footer">
+        <button ng-if="secondmodal.content == 'new_comment_form' " type="button" class="btn btn-success" data-dismiss="modal" ng-click="save_comment()">Guardar Comentario</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+
+  </div>
+</div>

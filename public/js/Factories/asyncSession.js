@@ -15,10 +15,10 @@
 	(function () {
     'use strict';
 
-    var SessionService = angular.module("services.Session", []);
+    var SessionService = angular.module("polling", []);
 
     pollingService
-        .factory('$session', function ($http) {
+        .factory('$polling', function ($http) {
 
             var defaultPollingTime = 10000;
             var polls = [];
@@ -42,3 +42,32 @@
         });
 
 }());
+
+
+angular.module('UserSession', []);
+
+
+(function() {
+    "use strict";
+
+    angular.module("UserSession").factory("SessionData", SessionData);
+
+    SessionData.$inject = ["$http"];
+
+    function SessionData($http,url,data) {
+    //return {USU_ID:"729",USU_NOMBRE:"Jesús Alejandro"};
+    return $http.post(url,data).then(function (response) {
+            if(response.data.status == "OK")
+            {
+                return response.data;
+            }
+            else
+            {
+                alert("No se pudo obtener los datos de sessión");
+                return null;
+            }
+    });
+    }
+
+   
+})();

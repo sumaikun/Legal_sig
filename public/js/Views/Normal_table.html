@@ -13,6 +13,10 @@
 
       <div class="resize_column">
 
+        <div ng-if="col.Field == 'id' && id_in_checkbox == true " class="form-group">
+          <input type="checkbox" ng-model="selected_boxes"  ng-change="add_to_selected_boxes(row[col.Field])"> 
+        </div>
+
         <p ng-show="col.Field != 'Opciones' && col.Type != 'timestamp' && col.Key != 'MUL' && col.foreign_column == null && col.KEY !=  'extra_column' && col.KEY !=  'json_columns' " >
           {{::row[col.Field]}}
         </p>
@@ -32,6 +36,11 @@
           <p   ng-init="row[col.Field]=''" ng-model="row[col.Field]" contenteditable="{{col.editable && session_roles([1,2])}}" ng-blur="save_property_to_db(row[col.Field],col.Field,row.id)" >{{get_from_json_data("Requisitos",col.Field,row.id)}}</p>       
         </div>
         
+        <div ng-show="col.Field == 'Opciones'">
+
+          <button  ng-repeat="action in col.actions" ng-show="action.not_render == null" title="{{action.title}}" ng-if="check_session_action(action.role) && evaluate_column_conditions(action.condition,row) " ng-click="execute_action(row,current_view,action)"><i class="fas fa-{{action.icon}}"></i></button>       
+          
+        </div> 
 
       </div>
     </td>             

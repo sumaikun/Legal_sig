@@ -96,9 +96,46 @@
           </div>
         </div>
 
+
+        <div ng-if="modal.content == 'table_in_modal_with_headers' " class="table-responsive">
+          <table id="dynamicTable" ng-table-dynamic="MC.ModalNgtable with modal.TableModal.headers" class=" table table-responsive table-bordered" show-filter='true'>
+            <tr ng-repeat="row in $data" ng-if="view_last_condition($last,row,modal.only_last_row)">    
+               <td ng-repeat="header in $columns" ng-init="col = get_column_by_reference(header,modal.model)" filter="col.filter">
+                <div class="resize_column" >
+                    <p ng-show="col.Field != 'Opciones' && col.Type != 'timestamp' && col.Key != 'MUL' && col.foreign_column == null && col.KEY !=  'extra_column' && col.KEY !=  'json_columns' " >
+                      {{::row[col.Field]}}
+                    </p>
+
+                   <span  ng-if ="col.Key == 'MUL'  " class="text_table" >{{foreign_value(col.key_data,row[col.Field])}}</span>
+
+                   
+                   <span ng-if="col.foreign_column != null">
+                      {{foreign_value(col.foreign_column,row[col.Field])}}
+                   </span>
+
+                   <span ng-if="col.KEY ==  'extra_column' " ng-init="data = extra_column(MC.columns,col,row)">
+                      {{data.get_row[col.get]}}
+                   </span>
+                    
+                    <div ng-show="col.Field == 'Opciones'">
+
+                      <button  ng-repeat="action in col.actions" ng-show="action.not_render == null" title="{{action.title}}" ng-if="check_session_action(action.role) && evaluate_column_conditions(action.condition,row,modal.model) " ng-click="execute_action(row,current_view,action)"><i class="fas fa-{{action.icon}}"></i></button>       
+                      
+                    </div> 
+
+               </div>
+              </td>             
+            </tr>             
+          </table>
+          <br>
+          <div ng-if="modal.TableModal.action != null" class="form-group">
+            <button  ng-click="simple_modal_action(modal.TableModal.action,modal.TableModal.callback)" class="btn btn-primary">{{modal.TableModal.buttonname}}</button>
+          </div>
+        </div>
+
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
       </div>
     </div>
 

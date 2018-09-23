@@ -42,6 +42,7 @@
     {{Html::script("js/Services/SystemServices.js")}}
     {{Html::script("js/Services/CrudServices.js")}}
     {{Html::script('js/Directives/loading.js')}}
+    {{Html::script('js/Directives/DemoFile.js')}}
     {{Html::script("js/Controllers/BrainController.js")}}    
     {{Html::script("js/Controllers/MatrizController.js")}}
 

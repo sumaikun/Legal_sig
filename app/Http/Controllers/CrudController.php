@@ -125,7 +125,9 @@ class CrudController extends Controller
                     }
                     $inner = substr($inner, 0,-1);
                     $inner .=  ')';
-                    $sql .=  $key." in ".$inner;      
+                    $sql .=  $key." in ".$inner;
+
+                    //echo $sql;      
                 }
                 else
                 {

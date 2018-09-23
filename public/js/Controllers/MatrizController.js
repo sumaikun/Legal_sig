@@ -10,7 +10,7 @@
 
 	      return function(data, Criteria){
 	        
-	        console.log(Criteria);
+	        //console.log(Criteria);
 
 	        if(Criteria.id_empresa)
 	      	{
@@ -347,7 +347,7 @@
 	      	}	
 
 
-	      	console.log(Criteria);
+	      	//console.log(Criteria);
 
 	      	var Connections =  [{criteriaindex:"id_Tipo_matriz",itemindex:"id_Categorias"},
 	      	{criteriaindex:"id_Factores",itemindex:"id_Categorias"},{criteriaindex:"id_Tipo_norma",itemindex:"id_Articulos"},
@@ -422,7 +422,15 @@
 		
 })();
 
-app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemServices','$window','$compile','$filter','NgTableParams',function($scope,$timeout,CrudServices,SystemServices,$window,$compile,$filter,NgTableParams){
+app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemServices','$window','$compile','$filter','NgTableParams','$http',function($scope,$timeout,CrudServices,SystemServices,$window,$compile,$filter,NgTableParams,$http){
+
+	$scope.id_in_checkbox = true;
+
+	$scope.selected_boxes = [];
+
+	$scope.Evaluaciones = {};
+
+	$scope.modal = {};
 
 	$scope.enterprise_selected = "";
 
@@ -493,8 +501,8 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 
 			  var promises = [];
 
-			  tables_array.forEach(function(table_array){
-			  		promises = promises.concat(table_array.ready); 
+			  tables_array.forEach(function(table){
+			  		promises = promises.concat(table.ready); 
 			  });
 
 			  //console.log(promises);		  		  
@@ -544,21 +552,26 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 
      	}
 
-     	if((oldValue != newValue) & oldValue == 3)
+     	if((oldValue != newValue))
      	{
-     		array = ["Requisito_proceso","Barranca","Cota",
-     		"Guafilla","Villavicencio","Neiva","Oficinas",
-     		"Likelihood","Severity","Likelihood_X_Severity","Risk_Level"];
-     		
-     		array.forEach(function(value){
-     			row = $filter('filter')(self.headers,{Field:value})[0];
-     			index = self.headers.indexOf(row);
-     			self.headers.splice(index, 1);	
-     		});
+     		$scope.selected_boxes = [];
+     		UncheckAll();
+
+     		if(oldValue == 3)
+	     	{ 	
+	     		array = ["Requisito_proceso","Barranca","Cota",
+	     		"Guafilla","Villavicencio","Neiva","Oficinas",
+	     		"Likelihood","Severity","Likelihood_X_Severity","Risk_Level"];
+	     		
+	     		array.forEach(function(value){
+	     			row = $filter('filter')(self.headers,{Field:value})[0];
+	     			index = self.headers.indexOf(row);
+	     			self.headers.splice(index, 1);	
+	     		});
 
 
-     		self.Ngtable.reload();
-
+	     		self.Ngtable.reload();
+	     	}	
      		
      	}
 	   
@@ -621,6 +634,12 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 			return array; 	
 		}
 
+		if($scope.Session.rol != 1)
+		{
+			$scope.enterprise_selected = $scope.Session.empresas[0]; 	
+		}
+		
+
 		$scope.factores_select = [];
 
 		$scope.categorias_select = [];
@@ -628,6 +647,8 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 		//console.log($scope.Requisitos);
 
 		$scope.requisitos_view = $scope.Requisitos;  
+
+		$scope.requisitos_view.control([{title:'Editar',action:'edit',icon:'edit',role:[1,2]},{title:'eliminar',action:'delete',icon:'trash',role:[1]},{title:'Evaluaciones',action:'get_evals',icon:'check',role:[1,2,3]}]);
 
 		//$scope.requisitos_view = $scope.Requisitos.ng_table_adapter(["id","id_empresa","id_Categorias","id_Articulos","reqlegal","esperada"
 			//,"responsable","area","nrelacionadas","id_clase_norma"]);
@@ -653,7 +674,7 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 			{Field:"id_Factores",title:"Factor riesgo",filter:{id_Factores: 'dynamic-select'},filterData:"factores_select"},{Field:"id_Categorias",title:"Categorias",filter:{id_Categorias: 'dynamic-select'},filterData:"categorias_select"},{Field:"id_Tipo_norma",title:"Tipo de norma",filter:{id_Tipo_norma:"text"}},
 			{Field:"id_Normas",title:"Norma",filter:{id_Normas:"text"}},{Field:"id_Emision",title:"Fecha de emisión",filter:{id_Emision:"number"}},{Field:"id_Autoridad_emisora",title:"Autoridad emisora",filter:{id_Autoridad_emisora:"text"}},{Field:"id_Articulos",title:"Articulo",filter:{id_Articulos:"text"}},{Field:"id_Estados_vigencia",title:"Estado",filter:{id_Estados_vigencia:"select"},filterData:self.estados_vigencia_select},
 			{Field:"reqlegal",title:"Requisito",filter:{reqlegal:"text"}},{Field:"esperada",title:"Evidencia esperada",filter:{esperada:"text"}},{Field:"responsable",title:"responsable",filter:{responsable:"text"}},
-			{Field:"area",title:"Area",filter:{area:"text"}},{Field:"id_clase_norma",title:"Clase",filter:{id_clase_norma:"select"},filterData:self.clase_norma_select},{Field:"nrelacionadas",title:"Normas relacionadas",filter:{nrelacionadas:"text"}}
+			{Field:"area",title:"Area",filter:{area:"text"}},{Field:"id_clase_norma",title:"Clase",filter:{id_clase_norma:"select"},filterData:self.clase_norma_select},{Field:"nrelacionadas",title:"Normas relacionadas",filter:{nrelacionadas:"text"}},{Field:"Opciones",title:"Opciones"}
 		];
 
 		//console.log($scope.requisitos_view);		
@@ -729,17 +750,34 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 		return {by_model:by_model,get_row:get_row};
 	}
 
-	$scope.get_column_by_reference = function(header){
-
-		var column = $filter('filter')(self.columns,{Field:header.Field})[0];
-		
-		if(column == null)
+	$scope.get_column_by_reference = function(header,model=false){
+		if(model)
 		{
-			var column = $filter('filter')(self.headers,{Field:header.Field})[0];
-			// Si no esta en las columnas de la base de datos, entonces va a estar en los headers ya que estas columnas fuerón posteriormente creadas como objetos json		
-		}		
+			model = $scope[model];
 
-		return column;
+			var column = $filter('filter')(model.columns,{Field:header.Field})[0];
+			
+			if(column == null)
+			{
+				var column = $filter('filter')(model.headers,{Field:header.Field})[0];
+				// Si no esta en las columnas de la base de datos, entonces va a estar en los headers ya que estas columnas fuerón posteriormente creadas como objetos json		
+			}		
+
+			return column;	
+		}
+		else
+		{
+			var column = $filter('filter')(self.columns,{Field:header.Field})[0];
+			
+			if(column == null)
+			{
+				var column = $filter('filter')(self.headers,{Field:header.Field})[0];
+				// Si no esta en las columnas de la base de datos, entonces va a estar en los headers ya que estas columnas fuerón posteriormente creadas como objetos json		
+			}		
+
+			return column;	
+		}
+		
 		
 	}	
 	
@@ -784,22 +822,6 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 		
 	}
 
-
-
-	$scope.execute_action = function(row,model,action)
-	{
-		console.log(action);
-		   switch (action.action) {
-			 
-			    default:
-			    	alert("Acción no definida");
-			    	break;
-			}
-	}
-	          
-
-
-
 	$scope.foreign_value = function(key_data,f_id,return_value = false){
 	
 		var filter_object = {};
@@ -820,40 +842,192 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 		
 	}
 
-
-
-
 	$scope.reload_ngtable = function(ngtable)
 	{
 		self[ngtable].reload();
 	}
 
-	
 
-
-	$scope.modal_action = function(action,callback)
+	$scope.execute_action = function(row,model,action)
 	{
-		var ma = new make_confirm({text:"¿Esta seguro de continuar?"});
-		ma.init();
-		ma.execute();
-		output = ma.output();
-
-		if(output)
-		{
-			switch(action){
-				case "radio_row_from_table":
-					console.log(callback);
-					callback(self.ModalNgtable);
-					
-				break;
-				default:
-				break;
-			}	
-		}
-		
+		//console.log(action);
+		   switch (action.action) {
+			 	case "get_evals":
+			 		get_evaluations(row);
+			 		break;
+			 	case "get_comments":
+			 		get_comments(row);
+			 		break;
+			 	case "download_comment_file":
+			 		var exec = function(){
+			 			$window.location.assign(global_url+"/matriz/archivo_comentario/"+row.id);				 		
+			 		}
+			 		exec();
+			 		break;
+			 	case "create_comment":
+			 		create_comment(row);
+			 		break;	
+			    default:
+			    	alert("Acción no definida");
+			    	break;
+			}
 	}
-	
-	
+
+	$scope.new_comment = {};
+
+	function create_comment(row)
+	{
+		$("#AbstractSecondModal").modal("show");
+		$scope.secondmodal = {title:"Crear Comentario",size:"modal-md",content:"new_comment_form",model:"Comentarios"};
+		$scope.new_comment.requisito = row.id_Requisitos;				
+	}
+
+	$scope.save_comment = function()
+	{
+		//console.log($scope.new_comment);
+		if($scope.new_comment.titulo == "" || $scope.new_comment.comentario == "")
+		{
+			return alert("Faltan datos para relizar este proceso");
+		}
+		else
+		{
+		    var fileFormData = new FormData();
+            if($scope.new_comment.archivo != null)
+            {
+            	fileFormData.append('archivo', $scope.new_comment.archivo);	
+            }
+            
+            fileFormData.append('titulo', $scope.new_comment.titulo);
+            fileFormData.append('comentario', $scope.new_comment.comentario);
+            fileFormData.append('requisito', $scope.new_comment.requisito);
+
+            uploadUrl = global_url+"/matriz/registercomment";
+
+ 			$http.post(uploadUrl, fileFormData, {
+                transformRequest: angular.identity,
+                headers: {'Content-Type': undefined}
+ 
+            }).then(function (response) {
+            	alert("Comentario guardado");
+ 			
+            }).catch(function (err) {
+                alert("Error Mandando el correo electronico");
+            });
+		}	
+		$scope.new_comment = {};
+	}
+
+	function get_comments(row)
+	{
+		$scope.Comentarios = new table('comentario',CrudServices,null,false,{id_Requisitos:row["id_Requisitos"]});
+		$scope.Comentarios.ready.then(function(){
+			$("#AbstractSecondModal").modal("show");
+
+
+
+			var buttons = [{title:'Descargar',action:'download_comment_file',icon:'download',role:[1,2,3],condition:{type:"notnull",column:"archivo"}}];
+			$scope.Comentarios.columns.push({"Field":"Opciones","title":"Opciones","actions":buttons});
+			$scope.Comentarios.headers = [
+				{Field:"id",title:"id",filter:{id:"number"}},
+				{Field:"titulo",title:"titulo",filter:{comentario:"text"}},
+				{Field:"comentario",title:"Comentario",filter:{comentario:"text"}},
+				{Field:"Opciones",title:"Opciones"},
+			];
+
+			$scope.$apply(() => {
+				var modalT = {};
+				modalT.headers = $scope.Comentarios.headers;
+				$scope.secondmodal = {title:"Comentarios",size:"modal-md",content:"table_in_modal_with_headers",TableModal:modalT,model:"Comentarios"};
+				$scope.ModalSecondNgtable = new NgTableParams({},{ dataset: $scope.Comentarios.rows});
+				$scope.ModalSecondNgtable.reload();
+			});
+		});
+	}
+
+	function get_evaluations(row)
+	{
+		//console.log(row);
+		$scope.Evaluaciones = new table('evaluacion',CrudServices,null,false,{id_Requisitos:row["id"]});
+		$scope.Evaluaciones.ready.then(function(){			
+			$scope.Evaluaciones.headers = [
+			   {Field:"id",title:"id",filter:{id:"number"}},
+			   {Field:"fecha",title:"fecha",filter:{fecha:"text"}},
+			   {Field:"cumplimiento",title:"Estado de cumplimiento",filter:{cumplimiento:"text"}},
+			   {Field:"fecha_prox",title:"Próxima fecha de evaluación",filter:{fecha_prox:"text"}},
+			   {Field:"Opciones",title:"Opciones"}
+			];
+			console.log($scope.Evaluaciones);			
+			$scope.$apply(() => {
+				var modal_headers = $scope.Evaluaciones.headers;
+				
+				
+				
+				if($scope.Evaluaciones.rows.length > 1)
+				{
+
+					var after_action = function(){
+						console.info("Exec");
+						
+						$scope.modal.only_last_row = false;
+						
+					};
+					var table_modal_properties = {headers:modal_headers,action:"show_all",callback:after_action,buttonname:"Mostrar Evaluaciones anteriores"};
+				}
+				else
+				{
+					var table_modal_properties = {headers:modal_headers};
+				}
+				
+
+				var buttons = [{title:'Crear comentario',action:'create_comment',icon:'comment',role:[1,2,3],condition:{type:"last"}},{title:'Ver comentarios',action:'get_comments',icon:'list',role:[1,2,3],condition:{type:"last"}}];
+
+				$scope.Evaluaciones.columns.push({"Field":"Opciones","title":"Opciones","actions":buttons});
+
+				//console.info($scope.Evaluaciones);
+
+				var om =  new open_modal({title:"Evaluaciones",size:"modal-lg",content:"table_in_modal_with_headers",TableModal:table_modal_properties});
+				om.execute();
+				$scope.modal = om.output();
+				//console.log($scope.modal);
+				$scope.modal.model = "Evaluaciones";
+				$scope.modal.only_last_row = true;
+				if($scope.modal)
+				{				
+					self.ModalNgtable = new NgTableParams({},{ dataset: $scope.Evaluaciones.rows});
+					self.ModalNgtable.reload();
+				}
+
+			});
+		});
+
+		
+	}	
+
+
+	$scope.simple_modal_action = function(action,callback)	
+	{
+
+		callback();
+	}
+
+	$scope.view_last_condition = function(last,row,validation)
+	{
+		if(validation)
+		{
+			if(last)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return true;
+		}
+	}
 
 	$scope.session_roles = function(roles)
 	{
@@ -869,7 +1043,7 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 		}	
 	}
 
-	$scope.evaluate_column_conditions = function(condition,row)
+	$scope.evaluate_column_conditions = function(condition,row,model = null)
 	{
 		//console.log(row);
 		if(condition == null)
@@ -877,35 +1051,48 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 			return true;
 		}
 		else
-		{
-
-			if(condition.column != null)
-			{
-				//console.log(condition);
-				switch(condition.type){
-					case "equal":
-						//console.log(row[condition.column]);
-						//console.log(condition.value);
-						if(row[condition.column] == condition.value)
-						{
-							return true;		
-						}
-						else
-						{
-							return false;
-						}
-						break;
-					default:
+		{			
+			switch(condition.type){
+				case "equal":
+					if(row[condition.column] == condition.value)
+					{
+						return true;		
+					}
+					else
+					{
+						return false;
+					}
 					break;
-				}
-
-				return false;
-
+				case "last":
+				    //console.log(model);
+					//console.log($scope[model].rows[$scope[model].rows.length -1]);
+					if($scope[model].rows[$scope[model].rows.length -1] == row)
+					{
+						return true;
+					}
+				break;
+				case "notnull":
+				    //console.log(model);
+					//console.log($scope[model].rows[$scope[model].rows.length -1]);
+					if(row[condition.column] != null && row[condition.column] != "")
+					{
+						return true;
+					}
+				break;		
+				default:
+				break;
 			}
+
+			return false;
+
+			
 		}
 	}
 
-	
+	table.prototype.control = function(buttons){
+		var extra_column = {"Field":"Opciones","title":"Opciones","actions":buttons};
+		this.columns.push(extra_column);
+	}
 	
 
 	$scope.isWatching = function()
@@ -969,7 +1156,72 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 		}
 	}
 	
+    $scope.check_session_action = function(role)
+	{		
+		if(role.contains($scope.Session.rol))
+		{
+			//console.log("true");
+			return true;
+		}
+		else
+		{
+			//console.log("false");
+			return false;
+		}
+	}
+
+	$scope.add_to_selected_boxes = function(id)
+	{
+		console.info(id);
+
+		if($scope.selected_boxes.indexOf(id) != -1 )
+		{
+			console.log($scope.selected_boxes.indexOf(id));			
+			$scope.selected_boxes.splice($scope.selected_boxes.indexOf(id), 1);
+			return true;		
+		}
+
+		if($scope.enterprise_selected == "")
+		{	
+			event.preventDefault();
+			return alert("Seleccione primero una empresa para realizar esta evaluación en el filtro");
+		}
+		else
+		{
+			console.log("here");
+			$scope.selected_boxes.forEach(function(element){
+				var row = $filter('filter')($scope.Requisitos.rows,function(value){
+        			return value.id === element;
+				})[0];
+
+				//console.log(row);
+				//console.log($scope.enterprise_selected);
+				if(row.id_empresa != $scope.enterprise_selected)
+				{
+					return alert("No puede combinar requisitos de distintas empresas para evaluar");
+				}
+				
+			});
+			
+			$scope.selected_boxes.push(id);
+		}
 		
+	}
+
+	$scope.evaluate_reqs = function()
+	{
+		//console.log("clicked");
+		if($scope.selected_boxes.length > 0)
+		{
+			console.log($scope.selected_boxes);
+			$scope.secondmodal = {};
+			$scope.secondmodal.content = 'evaluation_form';
+			$("#AbstractSecondModal").modal("show");
+		}
+		else{
+			return alert("Seleccione primero algun requisito para evaluar");
+		} 
+	}
 
 }]);
 
@@ -996,3 +1248,11 @@ $(document).ready(function(){
 
 });
 
+function UncheckAll(){ 
+      var w = document.getElementsByTagName('input'); 
+      for(var i = 0; i < w.length; i++){ 
+        if(w[i].type=='checkbox'){ 
+          w[i].checked = false; 
+        }
+      }
+  }
