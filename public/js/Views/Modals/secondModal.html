@@ -74,12 +74,12 @@
 
           <label>Fecha de evaluación</label>
 
-          <input type="date" name="fecha" id="fechaini"  class="form-control">
+          <input type="date" min="{{today}}" name="fecha" id="fechaini" value="{{today}}"  class="form-control">
           
 
            <div class="form-group">
                   <label for="Evidencia de Cumplimiento">Evidencia De Cumplimiento</label>
-                  <textarea id="evidenciacump" class="form-control" placeholder="Ingrese la evidencia de cumplimiento" style="max-height: 100px !important;" maxlength="2500" required="" minlength="30" name="evidenciacump" cols="50" rows="10"></textarea>
+                  <textarea ng-model="$parent.new_eval.evidenciacump" id="evidenciacump"  class="form-control" placeholder="Ingrese la evidencia de cumplimiento" style="max-height: 100px !important;" maxlength="2500" required="" minlength="30"    cols="50" rows="10"></textarea>
            </div>
 
               <div class="form-group">
@@ -88,9 +88,9 @@
 
                   
                   <label for="0">0</label>
-                  <input checked="checked" name="calificacion" type="radio" value="0">
+                  <input checked="checked" ng-model="new_eval.calificacion" name="calificacion" type="radio" value="0">
                   <label for="100">100</label>
-                  <input name="calificacion" type="radio" value="100">
+                  <input name="calificacion" ng-model="new_eval.calificacion" type="radio" value="100">
 
                   
                 
@@ -106,6 +106,7 @@
       </div>
       <div class="modal-footer">
         <button ng-if="secondmodal.content == 'new_comment_form' " type="button" class="btn btn-success" data-dismiss="modal" ng-click="save_comment()">Guardar Comentario</button>
+        <button ng-if="secondmodal.content == 'evaluation_form' " type="button" class="btn btn-primary"  ng-click="save_eval()">Evaluar</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
       </div>
     </div>

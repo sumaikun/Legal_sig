@@ -1241,6 +1241,7 @@ class MatrizController extends Controller
         {
             $query = "Select a.id_Estados_vigencia as estado from Requisitos as r inner join Articulos as a  on 
             r.id_Articulos = a.id where r.id = $arr";
+            echo $query;
             $current_req = DB::select(DB::raw($query));
              if($current_req[0]->estado == 2)
             {

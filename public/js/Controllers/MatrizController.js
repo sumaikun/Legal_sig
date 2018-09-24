@@ -1217,12 +1217,95 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 			$scope.secondmodal = {};
 			$scope.secondmodal.content = 'evaluation_form';
 			$("#AbstractSecondModal").modal("show");
+
+			var today = new Date();
+			var dd = today.getDate();
+			var mm = today.getMonth()+1; //January is 0!
+			var yyyy = today.getFullYear();
+
+			if(mm < 12)
+			{
+				mm = "0"+mm;
+			}
+
+			if(dd < 10)
+			{
+				dd = "0"+dd;
+			}
+
+			$scope.today = yyyy+"-"+mm+"-"+dd;
+
+			console.log($scope.today);
+
+			
+			
+			//document.getElementById('fechaini').setAttribute("min", yyyy+"-"+mm+"-"+dd);
+		
 		}
 		else{
 			return alert("Seleccione primero algun requisito para evaluar");
 		} 
 	}
 
+	$scope.new_eval = {};
+
+	$scope.save_eval = function()
+	{
+
+        var datetimeStart = document.getElementById('fechaini').value;  
+        var datetimeEnd = document.getElementById('fechaprox').value; 
+
+        if(Date.parse(datetimeStart) >= Date.parse(datetimeEnd)){
+           alert("El valor de la fecha de proxima evaluación no puede ser menor o igual al de fecha de evaluación");
+           return false;
+        }
+
+        var evidenciacump = $("#evidenciacump").val();
+
+		$scope.new_eval.fechaini = datetimeStart;
+		$scope.new_eval.fechaprox = datetimeEnd;
+
+		$scope.new_eval.reqs_to_eval = $scope.selected_boxes;
+
+		$scope.new_eval.evidenciacump = evidenciacump;
+
+		console.log($scope.new_eval);
+        
+        var fileFormData = new FormData();
+            
+            fileFormData.append('calificacion', $scope.new_eval.calificacion);
+            fileFormData.append('fecha', $scope.new_eval.fechaini);
+            fileFormData.append('fechaprox', $scope.new_eval.fechaprox);
+            fileFormData.append('evidenciacump', $scope.new_eval.evidenciacump);
+            
+            var text_in_array = "";
+            $scope.new_eval.reqs_to_eval.forEach(function(element){
+            	text_in_array += element+",";
+            });
+
+
+            fileFormData.append('reqs_to_eval', text_in_array.substring(0, text_in_array.length - 1));
+            
+            uploadUrl = global_url+"/matriz/evaluate";
+
+ 			$http.post(uploadUrl, fileFormData, {
+                transformRequest: angular.identity,
+                headers: {'Content-Type': undefined}
+ 
+            }).then(function (response) {
+            	alert("Evaluaciones realizadas");
+            	UncheckAll();
+            	$scope.selected_boxes = [];
+            	$("#evidenciacump").val("");
+            	$("#fechaini").val("");
+            	$("#fechaprox").val("");
+				$scope.new_eval = {};
+				$("#AbstractSecondModal").modal("hide"); 			
+            }).catch(function (err) {
+                alert("Error");
+            });
+		
+	}	
 }]);
 
 
