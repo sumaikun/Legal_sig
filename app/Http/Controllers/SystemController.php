@@ -241,4 +241,6 @@ class SystemController extends Controller
 
         return response()->json(array("status"=>"OK"));
     }
+
+    
 }

@@ -5,11 +5,14 @@
 <table ng-init="init_table(Factores)" id="dynamicTable" ng-table-dynamic="CC.Ngcrudtable with current_view.columns" class=" table table-responsive table-bordered" show-filter='true' style=" max-height:606px !important;">
   <tr ng-repeat="row in $data">    
     <td ng-repeat="col in current_view.columns" ng-init="render_option = false">                  
+      
+      <!----- Valor normal de tabla --->
       <p ng-show="col.Field != 'Opciones' && col.Type != 'timestamp' && col.Key != 'MUL' && col.foreign_column == null" ng-model="row[col.Field]" onclick="big_text_edit(this)" class="text_table" contenteditable="{{column_behavior(col)}}" >
         {{::row[col.Field]}}        
       </p>
+      <!-------------------------------->
 
-      
+      <!----- Columna foranea con conexión directa --->      
       <div ng-if ="col.Key == 'MUL'  " ng-dblclick='render_option = render_edit({roles:[1,2]})'>        
         <span  ng-show="render_option == false " class="text_table" >{{foreign_value(col.key_data,row[col.Field])}}</span>
         <select ng-if ="render_option == true " class="form-control" ng-model="row[col.Field]">
@@ -18,42 +21,33 @@
           </option>
         </select>
       </div>
+      <!-------------------------------->
 
-      <!--
-      <span ng-if ="col.Key == 'MUL' && session_roles([3]) ">        
-        {{foreign_value(col.key_data,row[col.Field])}}
-      </span>
+      
 
-      <span ng-if="isWatching() && session_roles([1,2])">        
-        {{foreign_value(col.key_data,row[col.Field])}}
-      </span>
-      -->
-      <!--
-      <div ng-if="isWatching() && session_roles([1,2])">
-        <select ng-if ="col.Key == 'MUL'" class="form-control" ng-model="row[col.Field]">
-          <option  ng-repeat="selector in dynamicSelectArray(col.key_data.REFERENCED_TABLE_NAME)"  ng-value="selector[col.key_data.REFERENCED_COLUMN_NAME]"   >
-            {{selector[key_value]}}
-          </option>
-        </select>
-      </div>
-      -->
-
-
+      <!----- Columna foranea con conexión directa y llave falsa --->
        <span ng-if="col.foreign_column != null">
           {{foreign_value(col.foreign_column,row[col.Field])}}
        </span>
+      <!--------------------------------> 
 
+      <!----- Directiva para campos date ---> 
       <div ng-if ="col.Type == 'timestamp'">
         <input ng-if ="row[col.Field] != null " ng-model="row[col.Field]" type="date"  timestamp-to-date>
         <input ng-if ="row[col.Field] == null " ng-model="row[col.Field]" type="date" >
       </div>
+      <!-------------------------------->
 
+      <!----- Botones de acción  --->
       <div ng-show="col.Field == 'Opciones'">
         <button  ng-repeat="action in col.actions" ng-show="action.not_render == null" title="{{action.title}}" ng-if="check_session_action(action.role) && evaluate_column_conditions(action.condition,row) " ng-click="execute_action(row,current_view,action)"><i class="fas fa-{{action.icon}}"></i></button>       
       </div>                                      
     </td>
+    <!-------------------------------->
   
   </tr>
+
+  <!----- Campo para crear nuevos valores  --->
   <tr ng-if ="current_view != null ">    
     <td ng-repeat="col in current_view.columns"  ng-show="col.show == true" onclick="big_text_edit(this)">
       <p  ng-show ="col.Key != 'MUL' && session_roles([1,2])"  class="editable_table_content" ng-model="new_element[col.Field]" contenteditable="{{column_behavior(col)}}" style="height: 45px; padding-top: 15px;"></p>
@@ -66,7 +60,8 @@
         </select>
       </div>
     </td>
-    <td><button ng-show="session_roles([1,2])" ng-click="create(new_element,current_view)">Agregar</button></td>    
+    <td><button ng-show="session_roles([1,2])" ng-click="create(new_element,current_view)">Agregar</button></td>  <!-------------------------------->
+      
   </tr> 
 </table>
 
