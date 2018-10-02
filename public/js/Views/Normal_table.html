@@ -14,13 +14,13 @@
       <div class="resize_column">
 
         <!---- checkbox en id --->
-        <div ng-if="col.Field == 'id' && id_in_checkbox == true " class="form-group">
-          <input type="checkbox" ng-model="selected_boxes"  ng-change="add_to_selected_boxes(row[col.Field])"> 
-        </div>
+       
+          <input ng-if="col.Field == 'id' && id_in_checkbox == true " type="checkbox" ng-model="selected_boxes"  ng-change="add_to_selected_boxes(row[col.Field])"> 
+        
         <!------------------------>
 
         <!----- Valor normal de tabla , no valor foraneo , no valor asociado ---> 
-        <p ng-show="col.Field != 'Opciones' && col.Type != 'timestamp' && col.Key != 'MUL' && col.foreign_column == null && col.Key !=  'extra_column' && col.Key !=  'json_columns' "  ng-model="row[col.Field]" contenteditable="{{session_roles([1,2])}}" ng-blur="save_property_to_db(row[col.Field],col.Field,row.id,col.Key)">
+        <p ng-show="col.Field != 'Opciones' && col.Type != 'timestamp' && col.Key != 'MUL' && col.foreign_column == null && col.Key !=  'extra_column' && col.Key !=  'json_columns' "  ng-model="row[col.Field]" contenteditable="{{session_roles([1,2])}} && col.Field != 'id' " ng-blur="save_property_to_db(row[col.Field],col.Field,row.id,col.Key)">
           {{::row[col.Field]}}
         </p>
         <!------------------------>
@@ -28,13 +28,13 @@
        <!----- Valor foraneo con conexión directa ---> 
         <div ng-if ="col.Key == 'MUL'" >  
           
-          <span  ng-show ="render_option == false " class="text_table" >{{foreign_value(col.key_data,row[col.Field])}}</span>
+        <span  ng-show ="render_option == false " class="text_table" >{{foreign_value(col.key_data,row[col.Field])}}</span>
 
-         <select ng-if ="render_option == true " class="form-control" ng-model="row[col.Field]">
-          <option  ng-repeat="selector in dynamicLinkedSelectArray({col:col,row:row})"  ng-value="selector[idselectordynamicparam[col.Field]]"   >
+        <select ng-if ="render_option == true " class="form-control" ng-init="generate_var({varname:'data_to_edit'+row.id,index:col.Field,data:dynamicLinkedSelectArray({col:col,row:row})})" id="{{row.id+col.Field}}" ng-model="row[col.Field]">
+          <option  ng-repeat="selector in var_generate['data_to_edit'+row.id][col.Field]"  ng-value="selector[idselectordynamicparam[col.Field]]"   >
             {{selector[valueselectordynamicparam[col.Field]]}}
           </option>
-         </select>
+        </select>
 
         </div>
        <!------------------------>
@@ -48,15 +48,16 @@
        <!----- Valor foraneo con conexión indirecta , asociado por otros valores --->
        <div ng-if ="col.Key == 'extra_column'"  >
          
-         <span ng-show ="render_option == false "  ng-init="data = extra_column(MC.columns,col,row)">
+        <span ng-show ="render_option == false "  ng-init="data = extra_column(MC.columns,col,row)">
             {{data.get_row[col.get]}}
-         </span>
+        </span>
          
-         <select ng-if ="render_option == true " class="form-control" ng-init="generate_var({varname:'data_to_edit'+row.id,index:col.Field,data:dynamicLinkedSelectArray({col:col,row:row})})" id="{{row.id+col.Field}}" ng-click="on_change_to_edit({field:col.Field,id:row.id})">
+        <select ng-if ="render_option == true " class="form-control" ng-init="generate_var({varname:'data_to_edit'+row.id,index:col.Field,data:dynamicLinkedSelectArray({col:col,row:row})})" id="{{row.id+col.Field}}" ng-click="on_change_to_edit({field:col.Field,id:row.id})">
+          <option value=""></option>
           <option  ng-repeat="selector in var_generate['data_to_edit'+row.id][col.Field]" ng-selected="{{valueselecteddynamic != false && valueselecteddynamic[row.id+col.Field] == selector[idselectordynamicparam[col.Field]]}}"  value="{{selector[idselectordynamicparam[col.Field]]}}">
             {{selector[valueselectordynamicparam[col.Field]]}}
           </option>
-         </select>
+        </select>
 
        </div>  
        <!------------------------>
@@ -81,43 +82,10 @@
   <tr ng-if="create_register == true">
       
       <td ng-repeat="header in $columns" ng-init="col = get_column_by_reference(header)">
-          <p ng-show="col.Field != 'Opciones' && col.Type != 'timestamp' && col.Key != 'MUL' && col.foreign_column == null && col.Key !=  'extra_column' && col.Key !=  'json_columns' "  ng-model="row[col.Field]" contenteditable="{{session_roles([1,2])}}" ng-blur="save_property_to_db(row[col.Field],col.Field,row.id,col.Key)">
-            {{::row[col.Field]}}
-          </p>
-
-
-          <!----- Valor foraneo con conexión directa ---> 
-        <div ng-if ="col.Key == 'MUL'" >  
-          
-          <span  ng-show ="render_option == false " class="text_table" >{{foreign_value(col.key_data,row[col.Field])}}</span>
-
-         <select ng-if ="render_option == true " class="form-control" ng-model="row[col.Field]">
-          <option  ng-repeat="selector in dynamicLinkedSelectArray({col:col,row:row})"  ng-value="selector[idselectordynamicparam[col.Field]]"   >
-            {{selector[valueselectordynamicparam[col.Field]]}}
-          </option>
-         </select>
-
-        </div>
-       <!------------------------>
-       
-        <!----- Valor foraneo con conexión indirecta , asociado por otros valores --->
-       <div ng-if ="col.Key == 'extra_column'"  >
-         
-         <span ng-show ="render_option == false "  ng-init="data = extra_column(MC.columns,col,row)">
-            {{data.get_row[col.get]}}
-         </span>
-         
-         <select ng-if ="render_option == true " class="form-control" ng-init="generate_var({varname:'data_to_edit'+row.id,index:col.Field,data:dynamicLinkedSelectArray({col:col,row:row})})" id="{{row.id+col.Field}}" ng-click="on_change_to_edit({field:col.Field,id:row.id})">
-          <option  ng-repeat="selector in var_generate['data_to_edit'+row.id][col.Field]" ng-selected="{{valueselecteddynamic != false && valueselecteddynamic[row.id+col.Field] == selector[idselectordynamicparam[col.Field]]}}"  value="{{selector[idselectordynamicparam[col.Field]]}}">
-            {{selector[valueselectordynamicparam[col.Field]]}}
-          </option>
-         </select>
-
-       </div>  
-       <!------------------------>
-
-
-
+          <div ng-if="col.Field == 'id' ">            
+              <button class="animated_arrow_button btn">Crear Nuevo registro<i class="fas fa-arrow-right arrow1" aria-hidden="true"></i>
+              </button>
+          </div>
       </td>
   </tr>             
 </table>

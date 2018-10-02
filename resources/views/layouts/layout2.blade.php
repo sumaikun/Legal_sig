@@ -46,6 +46,13 @@
     {{Html::script("js/Controllers/BrainController.js")}}    
     {{Html::script("js/Controllers/MatrizController.js")}}
 
+
+    <!-- Sweet Alert -->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.28.1/sweetalert2.css">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.28.1/sweetalert2.all.js"></script>
+      
+
+
       @yield('css')
 
       <style>

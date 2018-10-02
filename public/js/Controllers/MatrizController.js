@@ -440,6 +440,8 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 
 	var request_alredy_done = [];
 
+	$scope.create_register = false;
+
 	$(".loading").show();
 
 	var self = this;
@@ -729,7 +731,7 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 			
 			inner_data = $scope.extra_column(self.columns,result[0],data.row);			
 			
-			//console.log(inner_data);
+	
 			
 			$scope.idselectordynamicparam[data.col.Field] = Object.keys(inner_data.get_row)[0];
 			$scope.valueselectordynamicparam[data.col.Field] = $scope[inner_data.by_model.table].default;			
@@ -742,19 +744,12 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 			
 			if(assoc_data.length > 0)
 			{
-				//console.log("valor asociado externo");
-				//console.log(assoc_data);
-
 				build_obj = {};
 
 				assoc_data.forEach(function(element){					
 					build_obj[element.Field] = inner_data.get_row[element.Field];
 				});
-
-				//console.log(build_obj);
-
-				//console.log($filter('filter')($scope[inner_data.by_model.table].rows,build_obj));
-
+			
 				return $filter('filter')($scope[inner_data.by_model.table].rows,function(value){
 					return filter_exact_object_properties(build_obj,value);
 				});
@@ -854,55 +849,91 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 	$scope.on_change_to_edit = function(data)
 	{
 		//console.log("clicked");
-		console.log(data);
+		//console.log(data);
 		//console.log($("#"+data.id+data.field).val());
-		//console.log(var_generate['data_to_edit'+row.id]);
-		var selected_value = $("#"+data.id+data.field).val();
+		//console.log($scope.var_generate['data_to_edit'+data.id]);
+		//var selected_value = $("#"+data.id+data.field).val();
+
+		//Guardar lo seleccionado		 
+
+		index_selector = '#\\3'+data.id+data.field;
+		var selected_value = document.querySelector(index_selector).value;		
+
 
 		if($scope.valueselecteddynamic[data.id+data.field] != selected_value)
 		{
 			$scope.valueselecteddynamic[data.id+data.field] = selected_value;
+			//Verficiar que el dato sea distinto al previamente seleccionado para evitar reprocesos.
 
-			//console.log($scope.var_generate['data_to_edit'+data.id]);
 			var direct_assoc =$filter('filter')(self.columns,{Field:data.field,Key:"extra_column"})[0];
-			//console.log($scope[direct_assoc.Field.replace("id_","")]);
-			var dataset_to_filter = $filter('filter')($scope[direct_assoc.Field.replace("id_","")].rows,function(value){				
-				if(value["id"] == selected_value){  return true}
-				else{ return false; }
-			});
-			
-			console.log(dataset_to_filter);
+			//reconocer asociacion directa
+
+			var dataset_to_filter = [];
+			var consequence_filter = [];
+
 			if(direct_assoc != null)
 			{
 				var cont = true;
 				while(cont)
 				{
-					//console.log(direct_assoc.with);
+				
+					//Conseguir llaves relacionadas
+					var keys_to_filter = $filter('filter')(self.columns,{with:direct_assoc.with,Key:"extra_column"});
+
+					var obj_to_filter = {};
+
+					keys_to_filter.forEach(function(key){
+						//console.log(key.Field);
+						//console.log($scope.valueselecteddynamic[data.id+key.Field]);						
+						obj_to_filter[key.Field] = $scope.valueselecteddynamic[data.id+key.Field];
+					});		
+					//--------------------------------------
 					
-					//console.log($scope[direct_assoc.with.replace("id_","")]);					
+					//Crear objetos para filtrar, pueden haber filtros de consecuencia, aquellos filtros que son resultados de otros resultados
 					
+					console.log(consequence_filter);	
+
+					if(consequence_filter.length > 0)
+					{
+						dataset_to_filter = consequence_filter;
+						consequence_filter = [];
+					}
+					else
+					{
+						dataset_to_filter.push(obj_to_filter);	
+					}
+
+					console.log(dataset_to_filter);
+					 
+					//---------------------------------------
+
+
+
+					//Filtro principal
 					$scope.var_generate['data_to_edit'+data.id][direct_assoc.with] = $filter('filter')($scope[direct_assoc.with.replace("id_","")].rows,function(value){
-						var result;
+						var result = 0;
 						dataset_to_filter.forEach(function(element){
-							if(value[direct_assoc.Field] == element["id"])
+							if(filter_exact_object_properties(element,value))
 							{
-								return true;
-							}
-							else
-							{
-								return false;
+								var obj_inner_filter = {};
+								obj_inner_filter[direct_assoc.with] = value["id"];
+								consequence_filter.push(obj_inner_filter);
+								result++;	
 							}
 						});
-						return result;
+						if(result>0){ return true; }else{ return false; }
+						return false;
 					});
+					//
 
-					dataset_to_filter = $scope.var_generate['data_to_edit'+data.id][direct_assoc.with];
+				
+					//Validación para quitar ciclo	
 
 					direct_assoc = $filter('filter')(self.columns,{Field:direct_assoc.with})[0];
+					
 					if(direct_assoc.with != null)
 					{
 						cont = true;
-
 					}
 					else
 					{
@@ -1056,23 +1087,31 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 	}
 
 	$scope.foreign_value = function(key_data,f_id,return_value = false){
-	
-		var filter_object = {};
-		filter_object[key_data.REFERENCED_COLUMN_NAME] = f_id;
-		//creo un objeto que tenga la columna de referencia
-
-		var foreign_data = $filter('filter')($scope[key_data.REFERENCED_TABLE_NAME.capitalize()].rows,filter_object)[0];
-		//Después busco el objeto y le regreso su valor por defecto	
-		if(!return_value)
-		{
-			return foreign_data[$scope[key_data.REFERENCED_TABLE_NAME.capitalize()].default];
-			//La razón de este codigo es para capturar el valor por defecto de forma dinámica	
-		}
-		else
-		{			
-			return 	foreign_data[return_value];
-		}	
+		//console.log(key_data);
 		
+			var filter_object = {};
+			filter_object[key_data.REFERENCED_COLUMN_NAME] = f_id;
+			//creo un objeto que tenga la columna de referencia
+
+			var foreign_data = $filter('filter')($scope[key_data.REFERENCED_TABLE_NAME.capitalize()].rows,filter_object)[0];
+			//Después busco el objeto y le regreso su valor por defecto	
+			if(!return_value)
+			{
+				if(foreign_data != null)
+				{
+					return foreign_data[$scope[key_data.REFERENCED_TABLE_NAME.capitalize()].default];
+					//La razón de este codigo es para capturar el valor por defecto de forma dinámica	
+				}
+				else
+				{
+					return "";
+				}		
+			}
+			else
+			{			
+				// El return value es un valor explicito
+				return 	foreign_data[return_value];
+			}		
 	}
 
 	$scope.reload_ngtable = function(ngtable)
@@ -1562,7 +1601,14 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
                 alert("Error");
             });
 		
-	}	
+	}
+
+	$scope.create_req = function()
+	{
+		$scope.create_register = true;
+		window.scrollTo(0,document.body.scrollHeight);
+	} 
+
 }]);
 
 

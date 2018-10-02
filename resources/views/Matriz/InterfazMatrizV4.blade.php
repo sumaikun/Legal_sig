@@ -6,6 +6,7 @@
     <div class="container">
     	
     	{!!Html::style('css/resize_table_with_columns.css')!!}
+    	{!!Html::style('css/arrow_button.css')!!}
 
 		<div class="row">
 		  <div class ="col-lg-12">
@@ -18,7 +19,7 @@
 					     
 					     <button ng-if="check_session_action([1,2])" class="btn btn-warning form-button btn_one_req" ng-click="evaluate_reqs()"  title="evaluar"><span class="glyphicon glyphicon-pencil"></span> Evaluar</button>
 
-					    <button ng-if="check_session_action([1,2,3])" class="btn btn-success form-button btn_one_req" data-toggle="modal" data-target="#modalexcel" title="Descargar Excel"><span class="glyphicon glyphicon-menu-down"></span> Excel </button>
+					    <!--<button ng-if="check_session_action([1,2,3])" class="btn btn-success form-button btn_one_req" data-toggle="modal" data-target="#modalexcel" title="Descargar Excel"><span class="glyphicon glyphicon-menu-down"></span> Excel </button>-->
 		        	</div>
 		        	<div ng-include src="'{{ url('/') }}/js/Views/Normal_table.html'"></div> 
 		        	<div ng-include src="'{{ url('/') }}/js/Views/Modal.html'"></div>
