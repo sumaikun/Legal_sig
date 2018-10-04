@@ -654,7 +654,7 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 
 		$scope.requisitos_view = $scope.Requisitos;  
 
-		$scope.requisitos_view.control([{title:'eliminar',action:'delete',icon:'trash',role:[1]},{title:'Evaluaciones',action:'get_evals',icon:'check',role:[1,2,3]}]);
+		$scope.requisitos_view.control([{title:'Evaluaciones',action:'get_evals',icon:'check',role:[1,2,3]},{title:'eliminar',action:'delete',icon:'trash',role:[1]},{title:'Replicar Requisitos',action:'replicate_req',icon:'copy',role:[1,2]}]);
 
 		//$scope.requisitos_view = $scope.Requisitos.ng_table_adapter(["id","id_empresa","id_Categorias","id_Articulos","reqlegal","esperada"
 			//,"responsable","area","nrelacionadas","id_clase_norma"]);
@@ -693,7 +693,13 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 		];
 
 		
-		alert("Matriz cargada");
+		
+        swal(
+          'Matriz cargada',
+          '',
+          'success'
+        );
+
 		$(".loading").hide();
 
 		
@@ -720,30 +726,37 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 
 	$scope.dynamicLinkedSelectArray = function(data){
 	
-		//$scope.key_value =  $scope[data.name.capitalize()].default;
-    	//return $scope[name.capitalize()].rows;
-    	//console.log(data.col);
-    	//console.log(data.row);
-    	if(data.col.Key == "extra_column")
+		if(data.col.Key == "extra_column")
     	{
     		var result = $filter('filter')(self.columns,{Field:data.col.Field,Key:"extra_column"});
-			//console.log("valor asociado interno");			
+					
+			inner_data = $scope.extra_column(self.columns,result[0],data.row);
+
 			
-			inner_data = $scope.extra_column(self.columns,result[0],data.row);			
-			
-	
-			
-			$scope.idselectordynamicparam[data.col.Field] = Object.keys(inner_data.get_row)[0];
-			$scope.valueselectordynamicparam[data.col.Field] = $scope[inner_data.by_model.table].default;			
+			if(data.row != null)
+			{
+				$scope.idselectordynamicparam[data.col.Field] = Object.keys(inner_data.get_row)[0];
+				$scope.valueselecteddynamic[data.row.id+data.col.Field] = inner_data.get_row[Object.keys(inner_data.get_row)[0]];			
+			}
+			else
+			{
+				$scope.idselectordynamicparam[data.col.Field] = "id";
+			}
+
+
+			$scope.valueselectordynamicparam[data.col.Field] = $scope[inner_data.by_model.table].default;
 			
 
-			$scope.valueselecteddynamic[data.row.id+data.col.Field] = inner_data.get_row[Object.keys(inner_data.get_row)[0]];
-			 
 
 			assoc_data = $filter('filter')(self.columns,{with:data.col.Field,Key:"extra_column"});
 			
 			if(assoc_data.length > 0)
-			{
+			{				
+				if(data.row == null)
+				{
+					return [];
+				}
+					
 				build_obj = {};
 
 				assoc_data.forEach(function(element){					
@@ -756,6 +769,7 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 			}
 			else
 			{
+
 				return $scope[inner_data.by_model.table].rows;	
 			}			
 		
@@ -776,28 +790,35 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 			//console.log($scope.valueselectordynamicparam); 
 
 
-			var obj_filter = {};
-			obj_filter[data.col.key_data.REFERENCED_COLUMN_NAME] = data.row[data.col.Field]; 
+			if(data.row != null)
+			{ 
+				var obj_filter = {};
+				obj_filter[data.col.key_data.REFERENCED_COLUMN_NAME] = data.row[data.col.Field]; 
 
-			//console.log(obj_filter);				
+				//console.log(obj_filter);				
 
-			inner_data = $filter('filter')($scope[data.col.key_data.REFERENCED_TABLE_NAME.capitalize()].rows,function(value){
-					return filter_exact_object_properties(obj_filter,value);				
-			})[0];
+				inner_data = $filter('filter')($scope[data.col.key_data.REFERENCED_TABLE_NAME.capitalize()].rows,function(value){
+						return filter_exact_object_properties(obj_filter,value);				
+				})[0];
+
+			}
+		
+
 
 			//console.log(inner_data);
 
 			if(assoc_data.length > 0)
 			{
+				if(data.row == null)
+				{
+					return [];
+				}
+
 				var build_obj = {};
 
 				assoc_data.forEach(function(element){					
 					build_obj[element.Field] = inner_data[element.Field];
 				});
-
-				/*console.log($filter('filter')($scope[data.col.key_data.REFERENCED_TABLE_NAME.capitalize()].rows,function(value){
-					return filter_exact_object_properties(build_obj,value);
-				}));*/
 
 				return $filter('filter')($scope[data.col.key_data.REFERENCED_TABLE_NAME.capitalize()].rows,function(value){
 					return filter_exact_object_properties(build_obj,value);
@@ -856,7 +877,16 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 
 		//Guardar lo seleccionado		 
 
-		index_selector = '#\\3'+data.id+data.field;
+		if(isNaN(data.id))
+		{
+			index_selector = "#"+data.id+data.field;
+			filterindex = "data_to_new_element";
+		}
+		else{
+			index_selector = '#\\3'+data.id+data.field;
+			filterindex = 'data_to_edit'+data.id;
+		}
+
 		var selected_value = document.querySelector(index_selector).value;		
 
 
@@ -891,7 +921,7 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 					
 					//Crear objetos para filtrar, pueden haber filtros de consecuencia, aquellos filtros que son resultados de otros resultados
 					
-					console.log(consequence_filter);	
+					//console.log(consequence_filter);	
 
 					if(consequence_filter.length > 0)
 					{
@@ -903,14 +933,14 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 						dataset_to_filter.push(obj_to_filter);	
 					}
 
-					console.log(dataset_to_filter);
+					//console.log(dataset_to_filter);
 					 
 					//---------------------------------------
 
-
-
 					//Filtro principal
-					$scope.var_generate['data_to_edit'+data.id][direct_assoc.with] = $filter('filter')($scope[direct_assoc.with.replace("id_","")].rows,function(value){
+
+
+					$scope.var_generate[filterindex][direct_assoc.with] = $filter('filter')($scope[direct_assoc.with.replace("id_","")].rows,function(value){
 						var result = 0;
 						dataset_to_filter.forEach(function(element){
 							if(filter_exact_object_properties(element,value))
@@ -968,12 +998,9 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 	}
 
 	$scope.extra_column = function(columns,column,row)
-	{
-		//console.log(column);
+	{	
 		
-		var with_column = $filter('filter')(columns,{Field:column.with})[0];
-
-		//console.log(with_column);
+		var with_column = $filter('filter')(columns,{Field:column.with})[0];	
 	
 		if(with_column.Key != "extra_column")
 		{
@@ -982,11 +1009,14 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 			//Por medio del Key data accedo a la tabla de referencia esta a su vez me permite instanciar el modelo inmediato del
 			//proceso y nuevamente buscando la columna por la que hace referencia retornar un valor.
 
-			filter_obj = {}; filter_obj[with_column.key_data.REFERENCED_COLUMN_NAME] = row[column.with];		
+			if(row != null)
+			{ 	
+				filter_obj = {}; filter_obj[with_column.key_data.REFERENCED_COLUMN_NAME] = row[column.with];		
 
-			//console.log(filter_obj); 
+				//console.log(filter_obj); 
 
-			var with_row = $filter('filter')(with_model.rows,filter_obj)[0];
+				var with_row = $filter('filter')(with_model.rows,filter_obj)[0];
+			}	
 		}
 
 		else
@@ -995,8 +1025,11 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 
 			var with_model = get_from_indirect.by_model;
 
-			var with_row = get_from_indirect.get_row;
+			if(row != null)
+			{
 
+				var with_row = get_from_indirect.get_row;
+			}	
 		}		
 
 		//console.log(with_row);
@@ -1006,10 +1039,13 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 		var by_model = $scope[by_column.key_data.REFERENCED_TABLE_NAME.capitalize()];			
 
 		//Estos modelos me permiten al modelo final para pasarle la referencia y traer valor solicitado
+		if(row != null)
+		{
+			filter_obj = {}; filter_obj[by_column.key_data.REFERENCED_COLUMN_NAME] = with_row[column.by];
 
-		filter_obj = {}; filter_obj[by_column.key_data.REFERENCED_COLUMN_NAME] = with_row[column.by];
-
-		var get_row = $filter('filter')(by_model.rows,filter_obj)[0];
+			var get_row = $filter('filter')(by_model.rows,filter_obj)[0];
+		}
+		else{var get_row = null;}
 
 		return {by_model:by_model,get_row:get_row};
 	}
@@ -1139,14 +1175,56 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 			 	case "create_comment":
 			 		create_comment(row);
 			 		break;
+			 	case "replicate_req":
+			 		var exec = function(){
+			 			var select_modal = new select_in_modal({dataset:$scope.Empresa,action:"replicate_requirement"});
+			 			select_modal.execute();
+						var select_modal_data = {};
+			 			select_modal_data.dataset = select_modal.output();
+			 			select_modal_data.title = "Empresa a replicar";
+			 			select_modal_data.action = select_modal.action;
+			 			select_modal_data.buttonname = "Replicar";
+			 			//select_modal_data.option = 1;
+			 			select_modal_data.callback = function(){
+			 				generate_req_object = angular.copy(row);
+			 				generate_req_object.id_empresa = select_modal_data.option;
+			 				
+			 				//console.log(only_one_type_req_validation(generate_req_object));
+			 				delete generate_req_object["id"];	
+
+			 				if(only_one_type_req_validation(generate_req_object))
+			 				{			 								 					
+			 					$scope.Requisitos.create(generate_req_object,{});
+			 					$("#AbstractModal").modal("hide");
+			 					self.Ngtable.reload();
+			 				}
+			 				else
+			 				{
+			 					swal({
+				                  type: 'error',
+				                  title: 'Oops...',
+				                  text: 'Ya existe un requisito como este y no puede replicarse'
+				                });		
+			 				}
+			 			}
+			 			var om =  new open_modal({title:"Replicar requisito",size:"modal-sm",content:"select_in_modal",SelectModal:select_modal_data});
+						om.execute();
+						$scope.modal = om.output();			 			
+			 		}	
+			 		exec();
+			 		break;	
 			 	case "delete":
 			 		var exec = function(){
-
+			 			$scope.delete(row,$scope.Requisitos);
 			 		}
 			 		exec();
 			 		break;		
 			    default:
-			    	alert("Acción no definida");
+			    	swal({
+	                  type: 'error',
+	                  title: 'Oops...',
+	                  text: 'Accion no definida'
+	                });
 			    	break;
 			}
 	}
@@ -1164,10 +1242,14 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 
 	$scope.save_comment = function()
 	{
-		//console.log($scope.new_comment);
-		if($scope.new_comment.titulo == "" || $scope.new_comment.comentario == "")
+		if($scope.new_comment.titulo == null || $scope.new_comment.comentario == null)
 		{
-			return alert("Faltan datos para relizar este proceso");
+			
+			return swal({
+	                  type: 'error',
+	                  title: 'Oops...',
+	                  text: 'Faltan datos para relizar este proceso'
+	                });
 		}
 		else
 		{
@@ -1188,10 +1270,20 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
                 headers: {'Content-Type': undefined}
  
             }).then(function (response) {
-            	alert("Comentario guardado");
+            	swal(
+                  '"Comentario guardado"',
+                  '',
+                  'success'
+                );
+            	
  			
             }).catch(function (err) {
-                alert("Error Mandando el correo electronico");
+                swal({
+	                  type: 'error',
+	                  title: 'Oops...',
+	                  text: "Error Mandando el correo electronico"
+	                });
+
             });
 		}	
 		$scope.new_comment = {};
@@ -1286,7 +1378,6 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 
 	$scope.simple_modal_action = function(action,callback)	
 	{
-
 		callback();
 	}
 
@@ -1427,6 +1518,7 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 				}
 				else
 				{
+
 					alert("Sucedio un error guardando los datos");
 				}
 			});	
@@ -1480,7 +1572,11 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 		if($scope.enterprise_selected == "")
 		{	
 			event.preventDefault();
-			return alert("Seleccione primero una empresa para realizar esta evaluación en el filtro");
+			return swal({
+                  type: 'error',
+                  title: '',
+                  text: 'Seleccione primero una empresa para realizar esta evaluación en el filtro'                  
+                }); 
 		}
 		else
 		{
@@ -1494,7 +1590,11 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 				//console.log($scope.enterprise_selected);
 				if(row.id_empresa != $scope.enterprise_selected)
 				{
-					return alert("No puede combinar requisitos de distintas empresas para evaluar");
+					return swal({
+	                  type: 'error',
+	                  title: '',
+	                  text: 'No puede combinar requisitos de distintas empresas para evaluar'                  
+	                }); 
 				}
 				
 			});
@@ -1539,7 +1639,11 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 		
 		}
 		else{
-			return alert("Seleccione primero algun requisito para evaluar");
+			return swal({
+	                  type: 'error',
+	                  title: '',
+	                  text: 'Seleccione primero algun requisito para evaluar'                  
+	                });
 		} 
 	}
 
@@ -1552,7 +1656,11 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
         var datetimeEnd = document.getElementById('fechaprox').value; 
 
         if(Date.parse(datetimeStart) >= Date.parse(datetimeEnd)){
-           alert("El valor de la fecha de proxima evaluación no puede ser menor o igual al de fecha de evaluación");
+           swal({
+	                  type: 'error',
+	                  title: '',
+	                  text: 'El valor de la fecha de proxima evaluación no puede ser menor o igual al de fecha de evaluación'                  
+	                });
            return false;
         }
 
@@ -1589,7 +1697,11 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
                 headers: {'Content-Type': undefined}
  
             }).then(function (response) {
-            	alert("Evaluaciones realizadas");
+            	swal(
+                  'Evaluaciones realizadas',
+                  '',
+                  'success'
+                );
             	UncheckAll();
             	$scope.selected_boxes = [];
             	$("#evidenciacump").val("");
@@ -1598,7 +1710,11 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 				$scope.new_eval = {};
 				$("#AbstractSecondModal").modal("hide"); 			
             }).catch(function (err) {
-                alert("Error");
+                swal({
+	                  type: 'error',
+	                  title: 'Oppsss',
+	                  text: 'Error'                  
+	                });
             });
 		
 	}
@@ -1606,8 +1722,75 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 	$scope.create_req = function()
 	{
 		$scope.create_register = true;
+		$scope.new_requirement = {};
 		window.scrollTo(0,document.body.scrollHeight);
 	} 
+
+
+	function only_one_type_req_validation(data)
+	{
+		var result = $filter('filter')($scope.Requisitos.rows,function(value){
+			return filter_exact_object_properties(data,value);
+		});
+		//console.log(result);
+		return result.length == 0;
+	} 
+
+	$scope.register_new_requirement = function()
+	{
+		console.log($scope.new_requirement);
+
+		if(isEmpty($scope.new_requirement))
+		{
+			return swal({
+                  type: 'error',
+                  title: '',
+                  text: 'No puede crear datos con valores vacios'                  
+                });
+		}
+		else
+		{
+			if($scope.new_requirement.id_empresa == null || $scope.new_requirement.id_Categorias == null || 
+				$scope.new_requirement.id_Articulos == null ||	$scope.new_requirement.id_clase_norma == null)
+			{
+				return swal({
+                  type: 'error',
+                  title: '',
+                  text: 'Faltan datos para crear este requisito'                  
+                });
+			}
+			else
+			{
+				var picked = (({ id_empresa, id_Categorias, id_Articulos }) => ({ id_empresa, id_Categorias, id_Articulos }))($scope.new_requirement);
+
+				if(only_one_type_req_validation(picked))
+ 				{	
+ 					console.log("time to create");		 								 					
+ 					$scope.Requisitos.create($scope.new_requirement,{});
+ 					$("#AbstractModal").modal("hide");
+ 					$scope.new_requirement = {};
+ 					self.Ngtable.reload();
+ 				}
+ 				else
+ 				{
+ 					swal({
+	                  type: 'error',
+	                  title: 'Oops...',
+	                  text: 'Ya existe un requisito como este y no puede replicarse'
+	                });		
+ 				}
+			}									
+			  
+		}
+	}
+
+	
+	$scope.delete = function(row,model)
+	{	
+		model.delete(row,self.Ngtable);	
+	}
+	
+	
 
 }]);
 

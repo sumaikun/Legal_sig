@@ -182,9 +182,10 @@ table.prototype.save_state = function()
 
 
 table.prototype.create = function(row,copy,frontable=false){
+	$(".loading").show();
 	
 	var last = this.rows[this.rows.length - 1];
-	console.log(last);
+	//console.log(last);
 	
 	row.id = (parseInt(last.id)+parseInt(1)).toString();	
 	
@@ -201,11 +202,35 @@ table.prototype.create = function(row,copy,frontable=false){
 		frontable.reload();	
 	}
 	
-	var request = this.resource.create(this);
+	//console.log(this);
+
+	//--- Cuando el número de lineas supera un limite no manda request al ser tan grande por eso debo eliminarlas
+
+	object_without_rows = angular.copy(this);
+
+	delete object_without_rows["rows"];
+
+	var request = this.resource.create(object_without_rows);
+
+	//------------------------------------------------------------------------------
+
 	request.then(function(response){
 		if(response.data.status == 1)
 		{
-			alert("creado");			
+			swal(
+                  'Registro creado',
+                  '',
+                  'success'
+            );
+            $(".loading").hide();			
+		}
+		else
+		{
+			swal({
+                  type: 'error',
+                  title: '',
+                  text: 'Error al guardar el registro'                 
+            });
 		}
 		
 	});
@@ -225,11 +250,23 @@ table.prototype.update = function(row){
 	request.then(function(response){
 		if(response.data.status == 1)
 		{
-			alert("Editado");
+			
+			swal(
+                  'Registro editado',
+                  '',
+                  'success'
+            );
+
 		}
 		else
 		{
-			alert(response.data.message);	
+			swal({
+              type: 'error',
+              title: 'Oops...',
+              text: response.data.message,
+              footer: '<a href>Why do I have this issue?</a>'
+            });
+				
 		}
 	});
 };
@@ -237,7 +274,8 @@ table.prototype.update = function(row){
 table.prototype.delete = function(row,frontable=false)
 {	
 	if(confirm("¿Esta seguro de realizar este proceso?"))
-	{ 	
+	{
+	 	$(".loading").show();
 		this.data = angular.fromJson(row);	
 		var request = this.resource.delete(this);
 		var object = this;
@@ -247,8 +285,16 @@ table.prototype.delete = function(row,frontable=false)
 			if(response.data.status == 1)
 			{
 				var index = object.rows.indexOf(row);
-				object.rows.splice(index, 1);
-				alert("eliminado");
+				object.rows.splice(index, 1);				
+
+				swal(
+                  'Eliminado',
+                  '',
+                  'success'
+	            );
+
+	            $(".loading").hide();	
+
 				if(frontable!=false)
 				{
 					frontable.reload();	

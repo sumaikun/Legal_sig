@@ -12,13 +12,13 @@
 
         <div class="form-group" ng-if="modal.content == 'select_in_modal' ">
            <label class="form-control">{{modal.SelectModal.title}}</label> 
-           <select  class="form-control" ng-model="SelectModal.option">
+           <select  class="form-control" ng-model="modal.SelectModal.option">
             <option  ng-repeat="selector in modal.SelectModal.dataset"  ng-value="selector.value" >
               {{selector.option}}
             </option>
           </select>
           <br>
-          <button  class="form-control btn-success" ng-click="modal_action(modal.SelectModal.action)">{{modal.SelectModal.buttonname}}</button>
+          <button  class="form-control btn-success" ng-click="simple_modal_action(modal.SelectModal.action,modal.SelectModal.callback)">{{modal.SelectModal.buttonname}}</button>
         </div>
 
 

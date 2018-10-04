@@ -57,7 +57,7 @@ class CrudController extends Controller
             {
                 $request = json_decode($request_body);  
                 
-                if($request->Acc)
+                if(isset($request->Acc))
                 {
                     $Acc = $request->Acc;
                     $response = $this->$Acc($request);
@@ -99,7 +99,17 @@ class CrudController extends Controller
 
     public function getAll($request)
     {    
-        $sql = "Select * from ".$request->table;     
+        //$default_column = $this->DEFAULT_COLUMN($request);
+        $default_column = false;
+        if($default_column)
+        {
+            $sql = "Select * from ".$request->table." order by ".$default_column;
+        }
+        else
+        {
+            $sql = "Select * from ".$request->table;
+        }
+
         $rows = DB::SELECT(DB::RAW($sql));        
         $array = array("status"=>1,"rows"=>$rows,"sql"=>$sql);
         return response()->json($array);
@@ -161,6 +171,25 @@ class CrudController extends Controller
 
         return response()->json($array);
         
+    }
+
+    private function DEFAULT_COLUMN($request)
+    {
+        if($request->table != "requisitos")
+        { 
+            $sql = "SHOW COLUMNS FROM ".$request->table;           
+            $columns = DB::SELECT(DB::RAW($sql));
+            foreach($columns as $column)
+            {
+                if(strpos($column->Type,"varchar") !== false )
+                {
+                    //echo "done";
+                    return $column->Field;  
+                }
+            }
+        }
+
+        return false;   
     }
 
 
@@ -233,26 +262,29 @@ class CrudController extends Controller
 
     public function create($request)
     {
-
-        foreach($request->validation as $validation)
+        if(isset($request->validation))
         {
-            if($validation->type = "edit_or_create" )
+            foreach($request->validation as $validation)
             {
-                $validate = $validation;
-                $validate->type = "existence_on_create";
-                $f_validate = $this->process_validation($validate,$request);
-            }
+                if($validation->type = "edit_or_create" )
+                {
+                    $validate = $validation;
+                    $validate->type = "existence_on_create";
+                    $f_validate = $this->process_validation($validate,$request);
+                }
 
-            else
-            {
-                $f_validate = array("status"=>1);
+                else
+                {
+                    $f_validate = array("status"=>1);
+                }
             }
+            
+            if($f_validate["status"]!= 1)
+            {
+                return response()->json($f_validate);
+            }    
         }
-
-        if($f_validate["status"]!= 1)
-        {
-            return response()->json($f_validate);
-        }       
+               
 
         $array = $request->data;
 
@@ -268,11 +300,11 @@ class CrudController extends Controller
     {
         //DELETE FOREIGN DATA;
 
-        $sql = "SHOW KEYS FROM ".$request->table." WHERE Key_name = 'PRIMARY' ;";           
+        $sql = "SHOW KEYS FROM ".$table." WHERE Key_name = 'PRIMARY' ;";           
 
         $m_metadata = DB::SELECT(DB::RAW($sql))[0];
 
-        $sql = "SELECT * FROM  information_schema.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_NAME = '".$request->table."'";           
+        $sql = "SELECT * FROM  information_schema.KEY_COLUMN_USAGE WHERE REFERENCED_TABLE_NAME = '".$table."'";           
         $referenced = DB::SELECT(DB::RAW($sql));
 
         if($referenced!= null)
@@ -280,7 +312,7 @@ class CrudController extends Controller
             foreach($referenced as $reference)
             {
 
-                $sql = "Select * from ".$reference->TABLE_NAME." where ".$reference->COLUMN_NAME." = ".$request->id;
+                $sql = "Select * from ".$reference->TABLE_NAME." where ".$reference->COLUMN_NAME." = ".$array->id;
 
                 $resultdata = DB::SELECT(DB::RAW($sql));
 
