@@ -238,6 +238,7 @@ table.prototype.create = function(row,copy,frontable=false){
 };
 
 table.prototype.update = function(row){
+	$(".loading").show();
    this.data = JSON.stringify(row, function (key, val) {
 		 if (key == '$$hashKey') {
 		   return undefined;
@@ -245,9 +246,16 @@ table.prototype.update = function(row){
 		 return val;
 	});
 
-	this.data = angular.fromJson(this.data);		
-	var request = this.resource.persist(this);
+	this.data = angular.fromJson(this.data);
+
+	object_without_rows = angular.copy(this);
+
+	delete object_without_rows["rows"];
+
+			
+	var request = this.resource.persist(object_without_rows);
 	request.then(function(response){
+		$(".loading").hide();
 		if(response.data.status == 1)
 		{
 			
@@ -263,8 +271,7 @@ table.prototype.update = function(row){
 			swal({
               type: 'error',
               title: 'Oops...',
-              text: response.data.message,
-              footer: '<a href>Why do I have this issue?</a>'
+              text: response.data.message              
             });
 				
 		}

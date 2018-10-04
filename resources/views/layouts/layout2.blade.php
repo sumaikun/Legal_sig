@@ -34,17 +34,17 @@
     <script src="http://angular-ui.github.io/bootstrap/ui-bootstrap-tpls-0.11.0.js"></script>
     <link rel="stylesheet"; href="https://unpkg.com/ng-table@2.0.2/bundles/ng-table.min.css">
     <script src="https://unpkg.com/ng-table@2.0.2/bundles/ng-table.min.js"></script>
-    {{Html::script('js/Modules/app.js')}}
-    {{Html::script('js/Directives/contenteditable.js')}}
+    {{Html::script('js/Modules/app.js?n=1')}}
+    {{Html::script('js/Directives/contenteditable.js?n=1')}}
 
-    {{Html::script('js/Directives/timestampToDate.js')}}
-    {{Html::script("js/Services/BrainServices.js")}}
-    {{Html::script("js/Services/SystemServices.js")}}
-    {{Html::script("js/Services/CrudServices.js")}}
-    {{Html::script('js/Directives/loading.js')}}
-    {{Html::script('js/Directives/DemoFile.js')}}
-    {{Html::script("js/Controllers/BrainController.js")}}    
-    {{Html::script("js/Controllers/MatrizController.js")}}
+    {{Html::script('js/Directives/timestampToDate.js?n=1')}}
+    {{Html::script("js/Services/BrainServices.js?n=1")}}
+    {{Html::script("js/Services/SystemServices.js?n=1")}}
+    {{Html::script("js/Services/CrudServices.js?n=1")}}
+    {{Html::script('js/Directives/loading.js?n=1')}}
+    {{Html::script('js/Directives/DemoFile.js?n=1')}}
+    {{Html::script("js/Controllers/BrainController.js?n=1")}}    
+    {{Html::script("js/Controllers/MatrizController.js?n=1")}}
 
 
     <!-- Sweet Alert -->

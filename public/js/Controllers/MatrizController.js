@@ -652,7 +652,9 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 		
 		//console.log($scope.Requisitos);
 
-		$scope.requisitos_view = $scope.Requisitos;  
+		$scope.requisitos_view = $scope.Requisitos;
+
+		$scope.requisitos_view.validation = [{type:'edit_or_create',columns:["id_empresa","id_Categorias","id_Articulos"]}];  
 
 		$scope.requisitos_view.control([{title:'Evaluaciones',action:'get_evals',icon:'check',role:[1,2,3]},{title:'eliminar',action:'delete',icon:'trash',role:[1]},{title:'Replicar Requisitos',action:'replicate_req',icon:'copy',role:[1,2]}]);
 
@@ -1319,7 +1321,7 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 	function get_evaluations(row)
 	{
 		//console.log(row);
-		$scope.Evaluaciones = new table('evaluacion',CrudServices,null,false,{id_Requisitos:row["id"]});
+		$scope.Evaluaciones = new table('Evaluacion',CrudServices,null,false,{id_Requisitos:row["id"]});
 		$scope.Evaluaciones.ready.then(function(){			
 			$scope.Evaluaciones.headers = [
 			   {Field:"id",title:"id",filter:{id:"number"}},
@@ -1502,6 +1504,7 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 			}
 			else			
 			{
+				//Programa no finalizado se tomó otra decisión
 				console.log(self.tableModel);
 				console.log(Key);
 				$(".loading").hide();
@@ -1524,6 +1527,38 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 			});	
 			
 		}		
+	}
+
+
+	$scope.save_model_on_event = function(data)
+	{
+
+		var data_to_request = {data_to_save:data.row[data.col.Field],field:data.col.Field,related_id:data.row.id};
+		
+		console.log($filter('filter')(request_alredy_done,data_to_request)[0]);
+
+		//.length solo sirve para textos.
+
+		if($filter('filter')(request_alredy_done,data_to_request)[0] == null && (data.row[data.col.Field].length > 0 ||  data.row[data.col.Field] > 0))
+		{
+			request_alredy_done.push(data_to_request);	
+
+			console.log(data.col);
+			console.log(data.row);
+		
+			if(data.col.Key == 'MUL')
+			{				
+				//var picked = (({ id_empresa, id_Categorias, id_Articulos }) => ({ id_empresa, id_Categorias, id_Articulos }))($scope.row);
+				
+				var register = angular.copy(data.row);
+				$scope.Requisitos.update(register);
+			}
+			else
+			{
+				var register = angular.copy(data.row);
+				$scope.Requisitos.update(register);
+			}
+		}	
 	}
 
 	$scope.get_from_json_data = function(related_table,field,related_id)

@@ -206,26 +206,29 @@ class CrudController extends Controller
     public function persist($request)
     {
         //$validation = $request->validation;
+        if(isset($request->validation))
+        { 
 
-        foreach($request->validation as $validation)
-        {
-            if($validation->type = "edit_or_create" )
+            foreach($request->validation as $validation)
             {
-                $validate = $validation;
-                $validate->type = "existence_on_edit";
-                $f_validate = $this->process_validation($validate,$request);
+                if($validation->type = "edit_or_create" )
+                {
+                    $validate = $validation;
+                    $validate->type = "existence_on_edit";
+                    $f_validate = $this->process_validation($validate,$request);
+                }
+
+                else
+                {
+                    $f_validate = array("status"=>1);
+                }
             }
 
-            else
+            if($f_validate["status"]!= 1)
             {
-                $f_validate = array("status"=>1);
+                return response()->json($f_validate);
             }
-        }
-
-        if($f_validate["status"]!= 1)
-        {
-            return response()->json($f_validate);
-        }               
+        }                   
 
         $array = $request->data;
 
@@ -452,7 +455,7 @@ class CrudController extends Controller
                 foreach($validation->columns as $column)
                 {
                     if($count!=count($validation->columns))
-                    {
+                    {                        
                         $sql .= $column." = '".$request->data->$column."'  and ";
                     }
                     else
@@ -460,20 +463,25 @@ class CrudController extends Controller
                         $sql .= $column." = '".$request->data->$column."'";
                     }                    
                     $count++;
-                }
+                }        
 
-                $result = DB::SELECT(DB::RAW($sql));
+                $result = DB::SELECT(DB::RAW($sql));      
 
                 if(isset($result[0]))
                 {
                     if($result[0]->id != $request->data->id || count($result)>1)
                     {
                         $array = array("status"=>2,"message"=>"Existen valores similares en la base de datos por favor revise los datos enviados para evitar el ingreso de un registro repetido");
+                    }
+                    else
+                    {
+                        $array = array("status"=>1);   
                     }    
                 }
-                
-
-                $array = array("status"=>1);
+                else
+                {
+                    $array = array("status"=>1);    
+                }                
                 break;
             case "existence_on_create":
                     $sql = "Select * from ".$request->table." where ";
@@ -502,8 +510,10 @@ class CrudController extends Controller
                         
                         $array = array("status"=>2,"message"=>"Ya hay un registro igual en la base de datos");
                     }
-
-                    $array = array("status"=>1);
+                    else
+                    {
+                        $array = array("status"=>1);    
+                    }                    
             break;    
             default:
                 $array = array("status"=>1);

@@ -10,7 +10,10 @@ app.directive('contenteditable', function($timeout) {
         element.on('focus blur keyup paste input', function() {
           //console.log(scope.ngModel);
           scope.ngModel = element.text();
-          scope.$apply();
+          if(!scope.$root.$$phase != '$apply' && scope.$root.$$phase != '$digest')
+          {
+            scope.$apply();
+          }     
           return element;
         });        
       }

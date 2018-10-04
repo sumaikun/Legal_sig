@@ -20,7 +20,7 @@
         <!------------------------>
 
         <!----- Valor normal de tabla , no valor foraneo , no valor asociado ---> 
-        <p ng-show="col.Field != 'Opciones' && col.Type != 'timestamp' && col.Key != 'MUL' && col.foreign_column == null && col.Key !=  'extra_column' && col.Key !=  'json_columns' "  ng-model="row[col.Field]" contenteditable="{{session_roles([1,2]) && col.Field != 'id' }}" ng-blur="save_property_to_db(row[col.Field],col.Field,row.id,col.Key)">
+        <p ng-show="col.Field != 'Opciones' && col.Type != 'timestamp' && col.Key != 'MUL' && col.foreign_column == null && col.Key !=  'extra_column' && col.Key !=  'json_columns' "  ng-model="row[col.Field]" contenteditable="{{session_roles([1,2]) && col.Field != 'id' }}" ng-blur="save_model_on_event({row:row,col:col})">
           {{::row[col.Field]}}
         </p>
         <!------------------------>
@@ -30,7 +30,7 @@
           
         <span  ng-show ="render_option == false " class="text_table" >{{foreign_value(col.key_data,row[col.Field])}}</span>
 
-        <select ng-if ="render_option == true " class="form-control" ng-init="generate_var({varname:'data_to_edit'+row.id,index:col.Field,data:dynamicLinkedSelectArray({col:col,row:row})})" id="{{row.id+col.Field}}" ng-model="row[col.Field]">
+        <select ng-if ="render_option == true " class="form-control" ng-init="generate_var({varname:'data_to_edit'+row.id,index:col.Field,data:dynamicLinkedSelectArray({col:col,row:row})})" id="{{row.id+col.Field}}" ng-model="row[col.Field]" ng-change="save_model_on_event({row:row,col:col})">
           <option  ng-repeat="selector in var_generate['data_to_edit'+row.id][col.Field]"  ng-value="selector[idselectordynamicparam[col.Field]]"   >
             {{selector[valueselectordynamicparam[col.Field]]}}
           </option>
