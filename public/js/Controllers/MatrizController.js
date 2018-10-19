@@ -354,7 +354,7 @@
 	      	{criteriaindex:"id_Normas",itemindex:"id_Articulos"},{criteriaindex:"id_Emision",itemindex:"id_Articulos"},
 	      	{criteriaindex:"id_Autoridad_emisora",itemindex:"id_Articulos"},{criteriaindex:"id_Estados_vigencia",itemindex:"id_Articulos"}];
 	        
-	        var Exact_number_properties =  ["id_empresa","id_Categorias","id_clase_norma"];
+	        var Exact_number_properties =  ["id_empresa","id_Categorias","id_Clase_norma"];
 
 	        return (data || []).filter(function(item){        
 	          /*if(dynamic_conditions(Criteria,item,Connections,Exact_number_properties))
@@ -659,7 +659,7 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 		$scope.requisitos_view.control([{title:'Evaluaciones',action:'get_evals',icon:'check',role:[1,2,3]},{title:'eliminar',action:'delete',icon:'trash',role:[1]},{title:'Replicar Requisitos',action:'replicate_req',icon:'copy',role:[1,2]}]);
 
 		//$scope.requisitos_view = $scope.Requisitos.ng_table_adapter(["id","id_empresa","id_Categorias","id_Articulos","reqlegal","esperada"
-			//,"responsable","area","nrelacionadas","id_clase_norma"]);
+			//,"responsable","area","nrelacionadas","id_Clase_norma"]);
 
 		//console.log($scope.requisitos_view);
 
@@ -691,7 +691,7 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 			{Field:"id_Factores",title:"Factor riesgo",filter:{id_Factores: 'dynamic-select'},filterData:"factores_select"},{Field:"id_Categorias",title:"Categorias",filter:{id_Categorias: 'dynamic-select'},filterData:"categorias_select"},{Field:"id_Tipo_norma",title:"Tipo de norma",filter:{id_Tipo_norma:"text"}},
 			{Field:"id_Normas",title:"Norma",filter:{id_Normas:"text"}},{Field:"id_Emision",title:"Fecha de emisión",filter:{id_Emision:"number"}},{Field:"id_Autoridad_emisora",title:"Autoridad emisora",filter:{id_Autoridad_emisora:"text"}},{Field:"id_Articulos",title:"Articulo",filter:{id_Articulos:"text"}},{Field:"id_Estados_vigencia",title:"Estado",filter:{id_Estados_vigencia:"select"},filterData:self.estados_vigencia_select},
 			{Field:"reqlegal",title:"Requisito",filter:{reqlegal:"text"}},{Field:"esperada",title:"Evidencia esperada",filter:{esperada:"text"}},{Field:"responsable",title:"responsable",filter:{responsable:"text"}},
-			{Field:"area",title:"Area",filter:{area:"text"}},{Field:"id_clase_norma",title:"Clase",filter:{id_clase_norma:"select"},filterData:self.clase_norma_select},{Field:"nrelacionadas",title:"Normas relacionadas",filter:{nrelacionadas:"text"}},{Field:"Opciones",title:"Opciones"}
+			{Field:"area",title:"Area",filter:{area:"text"}},{Field:"id_Clase_norma",title:"Clase",filter:{id_Clase_norma:"select"},filterData:self.clase_norma_select},{Field:"nrelacionadas",title:"Normas relacionadas",filter:{nrelacionadas:"text"}},{Field:"Opciones",title:"Opciones"}
 		];
 
 		
@@ -1785,8 +1785,12 @@ app.controller('MatrizController',['$scope','$timeout','CrudServices','SystemSer
 		}
 		else
 		{
+			console.log($scope.new_requirement.id_empresa);
+			console.log($scope.new_requirement.id_Categorias);
+			console.log($scope.new_requirement.id_Articulos);
+			console.log($scope.new_requirement.id_Clase_norma);
 			if($scope.new_requirement.id_empresa == null || $scope.new_requirement.id_Categorias == null || 
-				$scope.new_requirement.id_Articulos == null ||	$scope.new_requirement.id_clase_norma == null)
+				$scope.new_requirement.id_Articulos == null ||	$scope.new_requirement.id_Clase_norma == null)
 			{
 				return swal({
                   type: 'error',
