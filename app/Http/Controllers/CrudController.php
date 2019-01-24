@@ -505,7 +505,7 @@ class CrudController extends Controller
 
 
                     
-                    if(count($result)>1)
+                    if(count($result)>0)
                     {
                         
                         $array = array("status"=>2,"message"=>"Ya hay un registro igual en la base de datos");
