@@ -1441,10 +1441,6 @@ class MatrizController extends Controller
         $requisito->area = $copy_requisito->area;
         $requisito->id_Clase_norma = $request->clase;
         $requisito->nrelacionadas = $copy_requisito->nrelacionadas;
-        $requisito->esperada = $copy_requisito->evidencia_esperada;      
-        $requisito->reqlegal = $copy_requisito->requisito_legal;
-        $requisito->responsable = $copy_requisito->responsable;
-        $requisito->area = $copy_requisito->area;
         
         $verify = Requisitos::where('id_Categorias','=',$requisito->id_Categorias)->where('id_Articulos','=',$requisito->id_Articulos)->where('id_empresa','=',$requisito->id_empresa)->where('id_Literales','=',$requisito->id_Literales)->first();             
         if($verify == null)

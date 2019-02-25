@@ -368,7 +368,7 @@ class CrudController extends Controller
         
         foreach($array as $key => $value)
         {
-            if($key != 'table' and $key != 'Acc')
+            if($key != 'table' and $key != 'Acc' and $key != 'deleted_at')
             {
                 $sql .= $key.",";
                 
@@ -381,7 +381,7 @@ class CrudController extends Controller
         
         foreach($array as $key => $value)
         {
-            if($key != 'table' and $key != 'Acc')
+            if($key != 'table' and $key != 'Acc' and $key != 'deleted_at')
             {
                 $sql .= "'".$value."',";
                 
@@ -392,6 +392,10 @@ class CrudController extends Controller
         $sql = substr_replace($sql, "", -1);
         $sql .= ") ";       
         
+        //echo $sql;
+
+        //exit;
+
         return $sql;
     }
     

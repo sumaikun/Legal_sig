@@ -36,7 +36,7 @@
    @endif 
 
 
-  @include('matriz.forms.modal')
+  @include('Matriz.forms.modal')
   	<section class="content-header">
     	<h4> <i class="fa fa-list-ul"></i> Lista </h4>
     	<ol class="breadcrumb">
